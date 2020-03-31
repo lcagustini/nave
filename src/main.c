@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     glDepthFunc(GL_LEQUAL);
 
     struct player player = {{0}};
-    player.model = loadWavefrontModel("/rd/spaceship.obj", "/rd/spaceship.vq", VERTEX_ALL, 1024);
+    player.model = loadWavefrontModel("/rd/map.obj", "/rd/map.vq", VERTEX_ALL, 1024);
 
     while(1) {
         cont = maple_enum_type(0, MAPLE_FUNC_CONTROLLER);

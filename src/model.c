@@ -8,7 +8,6 @@ void drawModel(struct model model) {
         glBegin(GL_TRIANGLES);
 
         for (int j = 0; j <= 2; j++) {
-
             if (model.num_normals) {
                 struct normal n = model.normals[f.normals[j]];
                 glNormal3f(n.x, n.y, n.z);

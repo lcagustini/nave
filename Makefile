@@ -26,12 +26,9 @@ romdisk.o: romdisk.img
 romdisk.img: gfx
 	$(KOS_GENROMFS) -f bin/romdisk.img -d romdisk -v
 
-gfx: spaceship.vq
-	mkdir -p romdisk/
-	mv assets/spaceship.vq romdisk/spaceship.vq
-
-spaceship.vq: assets/spaceship.png
-	$(KOS_BASE)/utils/vqenc/vqenc -t -v assets/spaceship.png
+gfx: 
+	-rm -rf romdisk/
+	sh make_romdisk.sh
 
 clean:
 	-rm -f $(TARGET) $(OBJS)

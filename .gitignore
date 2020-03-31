@@ -1,3 +1,4 @@
+romdisk/
 *.bin
 *.BIN
 bin/
