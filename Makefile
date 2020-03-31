@@ -1,24 +1,15 @@
-# OpenGL (c)2013-2014 Josh PH3NOM Pearson
+PROJECT = nave
 
-TARGET = main.elf
-OBJS = main.o
-OBJS += romdisk.o
+TARGET = $(PROJECT).elf
+OBJS = main.o romdisk.o
 
-all: rm-elf gfx $(TARGET)
+CFLAGS= -O2 -std=gnu99
 
-main.o: src/main.c
-	kos-cc $(CFLAGS) -std=c99 -c $< -o bin/$@ -Wall
-
-# include $(KOS_BASE)/Makefile.rules
-
-gfx: spaceship.vq
-	mv assets/spaceship.vq romdisk/spaceship.vq
-
-clean:
-	-rm -f $(TARGET) $(OBJS)
-
-rm-elf:
-	-rm -f $(TARGET) 
+cdi: $(TARGET)
+	IP_TEMPLATE_FILE=/opt/toolchains/dc/kos/utils/makeip/IP.TMPL $(KOS_BASE)/utils/makeip/makeip ip.txt IP.BIN
+	mkisofs -C 0,11702 -V $(PROJECT) -G IP.BIN -r -J -l -o $(PROJECT).iso .
+	$(KOS_BASE)/utils/cdi4dc/cdi4dc $(PROJECT).iso $(PROJECT).cdi
+	@rm $(PROJECT).iso IP.BIN 1ST_READ.BIN
 
 $(TARGET): $(OBJS) 
 	$(KOS_CC) $(KOS_CFLAGS) -std=c99 $(KOS_LDFLAGS) -o bin/$(TARGET) $(KOS_START) \
@@ -26,19 +17,22 @@ $(TARGET): $(OBJS)
 	sh-elf-objcopy -R .stack -O binary bin/$(TARGET) bin/output.bin
 	$(KOS_BASE)/utils/scramble/scramble bin/output.bin 1ST_READ.BIN
 
-spaceship.vq: assets/spaceship.png
-	$(KOS_BASE)/utils/vqenc/vqenc -t -v assets/spaceship.png
-
-romdisk.img: 
-	$(KOS_GENROMFS) -f bin/romdisk.img -d romdisk -v
+%.o: src/%.c
+	kos-cc $(CFLAGS) -c $< -o bin/$@
 
 romdisk.o: romdisk.img
 	$(KOS_BASE)/utils/bin2o/bin2o bin/romdisk.img romdisk bin/romdisk.o
 
-run: $(TARGET)
-	$(KOS_LOADER) $(TARGET)
+romdisk.img: gfx
+	$(KOS_GENROMFS) -f bin/romdisk.img -d romdisk -v
 
-dist:
-	rm -f $(OBJS) 
-	$(KOS_STRIP) $(TARGET)
+gfx: spaceship.vq
+	mkdir -p romdisk/
+	mv assets/spaceship.vq romdisk/spaceship.vq
+
+spaceship.vq: assets/spaceship.png
+	$(KOS_BASE)/utils/vqenc/vqenc -t -v assets/spaceship.png
+
+clean:
+	-rm -f $(TARGET) $(OBJS)
 
