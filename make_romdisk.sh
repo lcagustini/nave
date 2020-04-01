@@ -9,7 +9,7 @@ for file in $asset_folder; do
         continue
     fi
 
-    romdisk_file=$(echo "$file" | sed "s/assets/romdisk/")
+    romdisk_file=$(echo "$file" | sed "s/^assets/romdisk/")
     if [ -d $file ]; then
         echo "Directory $file -> $romdisk_file"
         mkdir -p $romdisk_file

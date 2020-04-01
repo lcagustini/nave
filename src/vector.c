@@ -40,6 +40,13 @@ inline struct vector vectorAdd(struct vector a, struct vector b) {
     return a;
 }
 
+inline struct vector vectorSubtract(struct vector a, struct vector b) {
+    a.x -= b.x;
+    a.y -= b.y;
+    a.z -= b.z;
+    return a;
+}
+
 // https://gamedev.stackexchange.com/questions/28395/rotating-vector3-by-a-quaternion
 struct vector vectorRotate(struct vector v, struct quaternion q) {
     struct vector u = {.x = q.x, .y = q.y, .z = q.z};

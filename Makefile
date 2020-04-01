@@ -3,11 +3,11 @@ PROJECT = nave
 TARGET = $(PROJECT).elf
 OBJS = main.o romdisk.o
 
-CFLAGS= -O2 -std=gnu99
+CFLAGS= -Ofast -std=gnu99
 
 cdi: $(TARGET)
 	IP_TEMPLATE_FILE=/opt/toolchains/dc/kos/utils/makeip/IP.TMPL $(KOS_BASE)/utils/makeip/makeip ip.txt IP.BIN
-	mkisofs -C 0,11702 -V $(PROJECT) -G IP.BIN -r -J -l -o $(PROJECT).iso .
+	mkisofs -C 0,11702 -V $(PROJECT) -G IP.BIN -r -J -l -o $(PROJECT).iso 1ST_READ.BIN
 	$(KOS_BASE)/utils/cdi4dc/cdi4dc $(PROJECT).iso $(PROJECT).cdi
 	@rm $(PROJECT).iso IP.BIN 1ST_READ.BIN
 

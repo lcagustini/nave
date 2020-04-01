@@ -47,6 +47,17 @@ struct quaternion {
 
 struct player {
     struct vector pos;
+    struct vector dir;
+
     struct model model;
+
+    struct vector normal_sum;
+    struct quaternion rotation;
+
+    float speed;
+    float hit_radius;
 };
 
+struct map {
+    struct model model;
+};
