@@ -82,12 +82,10 @@ bool rayIntersectsTriangle(struct vector rayOrigin, struct vector rayVector, str
         return false;
 }
 
-void collidesWithMap(struct vector *normal_sum, struct vector *max_z) {
+void collidesWithMap(struct vector *max_z) {
     struct vector next_pos = vectorAdd(player.pos, player.dir);
-    struct vector rotation_points[4] = {{-200, -200, -200}, {-200, -200, -200},
-        {-200, -200, -200}, {-200, -200, -200}};
-    struct vector rotation_normals[4] = {{-200, -200, -200}, {-200, -200, -200},
-        {-200, -200, -200}, {-200, -200, -200}};
+    struct vector rotation_points[4] = {{-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}};
+    struct vector rotation_normals[4] = {{-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}};
 
     for (int i = 0; i < cur_map.model.num_faces; i++) {
         struct face *cur = &cur_map.model.faces[i];
@@ -161,8 +159,18 @@ void collidesWithMap(struct vector *normal_sum, struct vector *max_z) {
             }
         }
     }
+
+    struct vector normal_sum = {0};
+    struct vector up = {0,0,1};
+
     for (int j = 0; j < 4; j++) {
-        *normal_sum = vectorAdd(*normal_sum, rotation_normals[j]);
+        normal_sum = vectorAdd(normal_sum, rotation_normals[j]);
     }
-    vectorNormalize(normal_sum);
+    vectorNormalize(&normal_sum);
+    player.rotation = getRotationQuat(up, normal_sum);
+
+    if (vectorLen(player.dir) > player.speed) {
+        vectorNormalize(&player.dir);
+        player.dir = vectorScale(player.speed, player.dir);
+    }
 }
