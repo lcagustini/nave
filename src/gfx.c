@@ -139,4 +139,17 @@ void drawFrame() {
     glScalef(0.24, 0.24, 0.24);
     drawModel(player.model);
     glPopMatrix();
+
+    for (int i = 0; i < enemies_size; i++) {
+        glPushMatrix();
+        glTranslatef(enemies[i].pos.x, enemies[i].pos.y, enemies[i].pos.z);
+        // From AllegroGL`s math.c
+        glRotatef((2*acos(enemies[i].rotation.w)) * 180 / M_PI,
+                enemies[i].rotation.x,
+                enemies[i].rotation.y,
+                enemies[i].rotation.z);
+        glScalef(0.24, 0.24, 0.24);
+        drawModel(enemies[i].model);
+        glPopMatrix();
+    }
 }

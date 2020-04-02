@@ -3,6 +3,11 @@ inline static float vectorLen(struct vector v) {
     return (float) fsqrt(len);
 }
 
+inline static float vectorLenSquared(struct vector v) {
+    float len = v.x * v.x + v.y * v.y + v.z * v.z;
+    return len;
+}
+
 inline static void vectorNormalize(struct vector *v) {
     float len = v->x * v->x + v->y * v->y + v->z * v->z;
     if (!len)
