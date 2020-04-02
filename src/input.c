@@ -1,19 +1,19 @@
 void getInput(cont_state_t *state) {
     if (!state) return;
 
-    memset(&player.dir, 0, sizeof(player.dir));
+    memset(&entities[PLAYER_ID].dir, 0, sizeof(entities[PLAYER_ID].dir));
     if (state->buttons & CONT_DPAD_DOWN) {
-        player.dir.y -= 1;
+        entities[PLAYER_ID].dir.y -= 1;
     }
     if (state->buttons & CONT_DPAD_UP) {
-        player.dir.y += 1;
+        entities[PLAYER_ID].dir.y += 1;
     }
     if (state->buttons & CONT_DPAD_LEFT) {
-        player.dir.x -= 1;
+        entities[PLAYER_ID].dir.x -= 1;
     }
     if (state->buttons & CONT_DPAD_RIGHT) {
-        player.dir.x += 1;
+        entities[PLAYER_ID].dir.x += 1;
     }
-    vectorNormalize(&player.dir);
-    player.dir = vectorScale(player.speed, player.dir);
+    vectorNormalize(&entities[PLAYER_ID].dir);
+    entities[PLAYER_ID].dir = vectorScale(entities[PLAYER_ID].speed, entities[PLAYER_ID].dir);
 }

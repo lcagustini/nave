@@ -122,34 +122,23 @@ void drawFrame() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glTranslatef(-player.pos.x, -player.pos.y, -14.0f);
+    glTranslatef(-entities[PLAYER_ID].pos.x, -entities[PLAYER_ID].pos.y, -14.0f);
 
     glPushMatrix();
     glScalef(MAP_SCALE, MAP_SCALE, MAP_SCALE);
     drawModel(cur_map.model);
     glPopMatrix();
 
-    glPushMatrix();
-    glTranslatef(player.pos.x, player.pos.y, player.pos.z);
-    // From AllegroGL`s math.c
-    glRotatef((2*acos(player.rotation.w)) * 180 / M_PI,
-            player.rotation.x,
-            player.rotation.y,
-            player.rotation.z);
-    glScalef(0.24, 0.24, 0.24);
-    drawModel(player.model);
-    glPopMatrix();
-
-    for (int i = 0; i < enemies_size; i++) {
+    for (int i = 0; i < entities_size; i++) {
         glPushMatrix();
-        glTranslatef(enemies[i].pos.x, enemies[i].pos.y, enemies[i].pos.z);
+        glTranslatef(entities[i].pos.x, entities[i].pos.y, entities[i].pos.z);
         // From AllegroGL`s math.c
-        glRotatef((2*acos(enemies[i].rotation.w)) * 180 / M_PI,
-                enemies[i].rotation.x,
-                enemies[i].rotation.y,
-                enemies[i].rotation.z);
+        glRotatef((2*acos(entities[i].rotation.w)) * 180 / M_PI,
+                entities[i].rotation.x,
+                entities[i].rotation.y,
+                entities[i].rotation.z);
         glScalef(0.24, 0.24, 0.24);
-        drawModel(enemies[i].model);
+        drawModel(entities[i].model);
         glPopMatrix();
     }
 }

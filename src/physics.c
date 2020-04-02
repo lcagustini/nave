@@ -82,8 +82,8 @@ bool rayIntersectsTriangle(struct vector rayOrigin, struct vector rayVector, str
         return false;
 }
 
-void collidesWithMap(struct entity *entity, struct vector *max_z) {
-    struct vector next_pos = vectorAdd(entity->pos, entity->dir);
+void collidesWithMap(int id, struct vector *max_z) {
+    struct vector next_pos = vectorAdd(entities[id].pos, entities[id].dir);
     struct vector rotation_points[4] = {{-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}};
     struct vector rotation_normals[4] = {{-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}};
 
@@ -113,27 +113,27 @@ void collidesWithMap(struct entity *entity, struct vector *max_z) {
                 (vertex0.z > next_pos.z + 0.03 ||
                  vertex1.z > next_pos.z + 0.03 ||
                  vertex2.z > next_pos.z + 0.03)) {
-            bool collides = sphereCollidesTriangle(next_pos, entity->hit_radius, vertex0, vertex1, vertex2);
+            bool collides = sphereCollidesTriangle(next_pos, entities[id].hit_radius, vertex0, vertex1, vertex2);
 
             if (collides) {
-                struct vector v = vectorSubtract(entity->pos, vertex0);
+                struct vector v = vectorSubtract(entities[id].pos, vertex0);
                 float d = vectorDot(v, normal);
                 struct vector collision = vectorScale(d, normal);
 
-                struct vector reaction_v = vectorAdd(entity->dir, collision);
-                entity->dir.x = reaction_v.x * entity->dir.x > 0 ? reaction_v.x : 0;
-                entity->dir.y = reaction_v.y * entity->dir.y > 0 ? reaction_v.y : 0;
-                entity->dir.z = reaction_v.z * entity->dir.z > 0 ? reaction_v.z : 0;
+                struct vector reaction_v = vectorAdd(entities[id].dir, collision);
+                entities[id].dir.x = reaction_v.x * entities[id].dir.x > 0 ? reaction_v.x : 0;
+                entities[id].dir.y = reaction_v.y * entities[id].dir.y > 0 ? reaction_v.y : 0;
+                entities[id].dir.z = reaction_v.z * entities[id].dir.z > 0 ? reaction_v.z : 0;
             }
         }
 
         // floors
         else {
             struct vector sky[4] = {
-                {entity->pos.x + entity->hit_radius, entity->pos.y, 200},
-                {entity->pos.x - entity->hit_radius, entity->pos.y, 200},
-                {entity->pos.x, entity->pos.y + entity->hit_radius, 200},
-                {entity->pos.x, entity->pos.y - entity->hit_radius, 200}
+                {entities[id].pos.x + entities[id].hit_radius, entities[id].pos.y, 200},
+                {entities[id].pos.x - entities[id].hit_radius, entities[id].pos.y, 200},
+                {entities[id].pos.x, entities[id].pos.y + entities[id].hit_radius, 200},
+                {entities[id].pos.x, entities[id].pos.y - entities[id].hit_radius, 200}
             };
 
             struct vector ground = {0, 0, -1};
@@ -150,7 +150,7 @@ void collidesWithMap(struct entity *entity, struct vector *max_z) {
                 }
             }
 
-            struct vector sky_center = {entity->pos.x, entity->pos.y, 200};
+            struct vector sky_center = {entities[id].pos.x, entities[id].pos.y, 200};
             bool intersect = rayIntersectsTriangle(sky_center, ground, cur, &intersect_v);
             if (intersect) {
                 if (max_z->z < intersect_v.z) {
@@ -167,11 +167,11 @@ void collidesWithMap(struct entity *entity, struct vector *max_z) {
         normal_sum = vectorAdd(normal_sum, rotation_normals[j]);
     }
     vectorNormalize(&normal_sum);
-    entity->rotation = getRotationQuat(up, normal_sum);
+    entities[id].rotation = getRotationQuat(up, normal_sum);
 
-    if (vectorLen(entity->dir) > entity->speed) {
-        vectorNormalize(&entity->dir);
-        entity->dir = vectorScale(entity->speed, entity->dir);
+    if (vectorLen(entities[id].dir) > entities[id].speed) {
+        vectorNormalize(&entities[id].dir);
+        entities[id].dir = vectorScale(entities[id].speed, entities[id].dir);
     }
 }
 
@@ -181,16 +181,16 @@ bool sphereCollidesSphere(struct vector sphere1_center, float sphere1_r, struct 
     return distance < hit_distance*hit_distance;
 }
 
-void collidesWithPlayer(struct entity *entity) {
-    struct vector next_pos = vectorAdd(entity->pos, entity->dir);
+void collidesWithPlayer(int id) {
+    struct vector next_pos = vectorAdd(entities[id].pos, entities[id].dir);
 
-    bool collides = sphereCollidesSphere(player.pos, player.hit_radius, next_pos, entity->hit_radius);
+    bool collides = sphereCollidesSphere(entities[PLAYER_ID].pos, entities[PLAYER_ID].hit_radius, next_pos, entities[id].hit_radius);
 
     if (collides) {
-        struct vector v = vectorSubtract(entity->pos, player.pos);
+        struct vector v = vectorSubtract(entities[id].pos, entities[PLAYER_ID].pos);
         vectorNormalize(&v);
-        v = vectorScale(entity->speed, v);
+        v = vectorScale(entities[id].speed, v);
 
-        entity->dir = vectorAdd(entity->dir, v);
+        entities[id].dir = vectorAdd(entities[id].dir, v);
     }
 }
