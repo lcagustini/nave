@@ -27,6 +27,7 @@ int enemies_size;
 #include "model.c"
 #include "gfx.c"
 #include "physics.c"
+#include "enemy.c"
 
 extern uint8 romdisk[];
 KOS_INIT_ROMDISK(romdisk);
@@ -45,14 +46,8 @@ int main(int argc, char **argv) {
     enemies[0].model = loadWavefrontModel("/rd/player.obj", "/rd/player.vq", VERTEX_ALL, 1024);
     enemies[0].speed = 0.02;
     enemies[0].hit_radius = 0.25;
-
-    enemies[1].pos.x = 0.7;
-    enemies[1].pos.y = -0.2;
-    enemies[1].pos.z = 15;
-    enemies[1].model = loadWavefrontModel("/rd/player.obj", "/rd/player.vq", VERTEX_ALL, 1024);
-    enemies[1].speed = 0.02;
-    enemies[1].hit_radius = 0.25;
-    enemies_size = 2;
+    enemies[0].type = ET_ENEMY_BASIC;
+    enemies_size = 1;
 
     cur_map.model = loadWavefrontModel("/rd/map.obj", "/rd/map.vq", VERTEX_ALL, 1024);
 
@@ -68,12 +63,7 @@ int main(int argc, char **argv) {
         player.pos = vectorAdd(player.pos, player.dir);
 
         for (int i = 0; i < enemies_size; i++) {
-            struct vector enemy_z = {0, 0, -200};
-            collidesWithPlayer(&enemies[i]);
-            collidesWithMap(&enemies[i], &enemy_z);
-            enemies[i].dir.z = 0.5*(enemy_z.z - enemies[i].pos.z);
-            enemies[i].pos = vectorAdd(enemies[i].pos, enemies[i].dir);
-            enemies[i].dir = vectorScale(0.9, enemies[i].dir);
+            doEnemyFrame(i);
         }
 
         drawFrame();

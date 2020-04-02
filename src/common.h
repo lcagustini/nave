@@ -45,6 +45,11 @@ struct quaternion {
     float z;
 };
 
+enum entityType {
+    ET_PLAYER,
+    ET_ENEMY_BASIC,
+};
+
 struct entity {
     struct vector pos;
     struct vector dir;
@@ -55,6 +60,8 @@ struct entity {
 
     float speed;
     float hit_radius;
+
+    enum entityType type;
 };
 
 struct map {
