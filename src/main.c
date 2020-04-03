@@ -38,16 +38,16 @@ int main(int argc, char **argv) {
 
     entities[PLAYER_ID].pos.z = 15;
     entities[PLAYER_ID].model = loadWavefrontModel("/rd/player.obj", "/rd/player.vq", VERTEX_ALL, 1024);
+    entities[PLAYER_ID].scale = 0.24;
     entities[PLAYER_ID].speed = 0.05;
-    entities[PLAYER_ID].hit_radius = 0.25;
+    entities[PLAYER_ID].hit_radius = 0.9375;
     entities[PLAYER_ID].type = ET_PLAYER;
 
-    entities[1].pos.x = 0.1;
-    entities[1].pos.y = 0.7;
     entities[1].pos.z = 15;
     entities[1].model = loadWavefrontModel("/rd/player.obj", "/rd/player.vq", VERTEX_ALL, 1024);
+    entities[1].scale = 0.24;
     entities[1].speed = 0.02;
-    entities[1].hit_radius = 0.25;
+    entities[1].hit_radius = 0.9375;
     entities[1].type = ET_ENEMY_BASIC;
 
     entities_size = 2;

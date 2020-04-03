@@ -47,14 +47,17 @@ struct quaternion {
 
 enum entityType {
     ET_PLAYER,
+    ET_BULLET,
     ET_ENEMY_BASIC,
 };
 
 struct entity {
     struct vector pos;
+    struct vector vel;
     struct vector dir;
 
     struct model model;
+    float scale;
 
     struct quaternion rotation;
 

@@ -137,7 +137,8 @@ void drawFrame() {
                 entities[i].rotation.x,
                 entities[i].rotation.y,
                 entities[i].rotation.z);
-        glScalef(0.24, 0.24, 0.24);
+        glRotatef(90 + (atan2(entities[i].dir.y, entities[i].dir.x) * 180 / M_PI), 0, 0, 1);
+        glScalef(entities[i].scale, entities[i].scale, entities[i].scale);
         drawModel(entities[i].model);
         glPopMatrix();
     }

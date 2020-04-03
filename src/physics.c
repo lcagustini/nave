@@ -83,7 +83,7 @@ bool rayIntersectsTriangle(struct vector rayOrigin, struct vector rayVector, str
 }
 
 void collidesWithMap(int id, struct vector *max_z) {
-    struct vector next_pos = vectorAdd(entities[id].pos, entities[id].dir);
+    struct vector next_pos = vectorAdd(entities[id].pos, entities[id].vel);
     struct vector rotation_points[4] = {{-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}};
     struct vector rotation_normals[4] = {{-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}};
 
@@ -107,33 +107,34 @@ void collidesWithMap(int id, struct vector *max_z) {
         float cosine = vectorDot(normal, up);
 
         float angle = acos(cosine) * 180 / M_PI;
+        float scaled_radius = entities[id].hit_radius * entities[id].scale;
 
         // walls
         if (angle > 60 &&
                 (vertex0.z > next_pos.z + 0.03 ||
                  vertex1.z > next_pos.z + 0.03 ||
                  vertex2.z > next_pos.z + 0.03)) {
-            bool collides = sphereCollidesTriangle(next_pos, entities[id].hit_radius, vertex0, vertex1, vertex2);
+            bool collides = sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2);
 
             if (collides) {
                 struct vector v = vectorSubtract(entities[id].pos, vertex0);
                 float d = vectorDot(v, normal);
                 struct vector collision = vectorScale(d, normal);
 
-                struct vector reaction_v = vectorAdd(entities[id].dir, collision);
-                entities[id].dir.x = reaction_v.x * entities[id].dir.x > 0 ? reaction_v.x : 0;
-                entities[id].dir.y = reaction_v.y * entities[id].dir.y > 0 ? reaction_v.y : 0;
-                entities[id].dir.z = reaction_v.z * entities[id].dir.z > 0 ? reaction_v.z : 0;
+                struct vector reaction_v = vectorAdd(entities[id].vel, collision);
+                entities[id].vel.x = reaction_v.x * entities[id].vel.x > 0 ? reaction_v.x : 0;
+                entities[id].vel.y = reaction_v.y * entities[id].vel.y > 0 ? reaction_v.y : 0;
+                entities[id].vel.z = reaction_v.z * entities[id].vel.z > 0 ? reaction_v.z : 0;
             }
         }
 
         // floors
         else {
             struct vector sky[4] = {
-                {entities[id].pos.x + entities[id].hit_radius, entities[id].pos.y, 200},
-                {entities[id].pos.x - entities[id].hit_radius, entities[id].pos.y, 200},
-                {entities[id].pos.x, entities[id].pos.y + entities[id].hit_radius, 200},
-                {entities[id].pos.x, entities[id].pos.y - entities[id].hit_radius, 200}
+                {entities[id].pos.x + scaled_radius, entities[id].pos.y, 200},
+                {entities[id].pos.x - scaled_radius, entities[id].pos.y, 200},
+                {entities[id].pos.x, entities[id].pos.y + scaled_radius, 200},
+                {entities[id].pos.x, entities[id].pos.y - scaled_radius, 200}
             };
 
             struct vector ground = {0, 0, -1};
@@ -142,7 +143,7 @@ void collidesWithMap(int id, struct vector *max_z) {
             for (int j = 0; j < 4; j++) {
                 bool intersect = rayIntersectsTriangle(sky[j], ground, cur, &intersect_v);
                 if (intersect) {
-                    // only false if slime is out of bounds
+                    // only false if out of bounds
                     if (rotation_points[j].z < intersect_v.z) {
                         rotation_points[j] = intersect_v;
                         rotation_normals[j] = normal;
@@ -169,9 +170,9 @@ void collidesWithMap(int id, struct vector *max_z) {
     vectorNormalize(&normal_sum);
     entities[id].rotation = getRotationQuat(up, normal_sum);
 
-    if (vectorLen(entities[id].dir) > entities[id].speed) {
-        vectorNormalize(&entities[id].dir);
-        entities[id].dir = vectorScale(entities[id].speed, entities[id].dir);
+    if (vectorLen(entities[id].vel) > entities[id].speed) {
+        vectorNormalize(&entities[id].vel);
+        entities[id].vel = vectorScale(entities[id].speed, entities[id].vel);
     }
 }
 
@@ -182,15 +183,15 @@ bool sphereCollidesSphere(struct vector sphere1_center, float sphere1_r, struct 
 }
 
 void collidesWithPlayer(int id) {
-    struct vector next_pos = vectorAdd(entities[id].pos, entities[id].dir);
+    struct vector next_pos = vectorAdd(entities[id].pos, entities[id].vel);
 
-    bool collides = sphereCollidesSphere(entities[PLAYER_ID].pos, entities[PLAYER_ID].hit_radius, next_pos, entities[id].hit_radius);
+    bool collides = sphereCollidesSphere(entities[PLAYER_ID].pos, entities[PLAYER_ID].hit_radius * entities[PLAYER_ID].scale, next_pos, entities[id].hit_radius * entities[id].scale);
 
     if (collides) {
         struct vector v = vectorSubtract(entities[id].pos, entities[PLAYER_ID].pos);
         vectorNormalize(&v);
         v = vectorScale(entities[id].speed, v);
 
-        entities[id].dir = vectorAdd(entities[id].dir, v);
+        entities[id].vel = vectorAdd(entities[id].vel, v);
     }
 }
