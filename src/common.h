@@ -45,9 +45,23 @@ struct quaternion {
     float z;
 };
 
+struct projectile {
+    struct vector pos;
+    struct vector vel;
+
+    struct model model;
+    float speed;
+    float scale;
+
+    float hit_radius;
+
+    int damage;
+
+    struct projectile *next;
+};
+
 enum entityType {
     ET_PLAYER,
-    ET_BULLET,
     ET_ENEMY_BASIC,
 };
 
@@ -63,6 +77,10 @@ struct entity {
 
     float speed;
     float hit_radius;
+
+    int health;
+
+    int cooldown;
 
     enum entityType type;
 };

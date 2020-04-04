@@ -129,6 +129,15 @@ void drawFrame() {
     drawModel(cur_map.model);
     glPopMatrix();
 
+    for (struct projectile *cur = projectiles; cur; cur = cur->next) {
+        glPushMatrix();
+        glTranslatef(cur->pos.x, cur->pos.y, cur->pos.z);
+        glRotatef(90 + (atan2(cur->vel.y, cur->vel.x) * 180 / M_PI), 0, 0, 1);
+        glScalef(cur->scale, cur->scale, cur->scale);
+        drawModel(cur->model);
+        glPopMatrix();
+    }
+
     for (int i = 0; i < entities_size; i++) {
         glPushMatrix();
         glTranslatef(entities[i].pos.x, entities[i].pos.y, entities[i].pos.z);

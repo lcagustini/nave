@@ -6,9 +6,6 @@ void doBasicFrame(int id) {
     entities[id].vel = vectorScale(entities[id].speed, entities[id].vel);
 }
 
-void doBulletFrame(int id) {
-}
-
 void doPlayerFrame() {
 }
 
@@ -16,9 +13,6 @@ void doEntityFrame(int id) {
     switch (entities[id].type) {
         case ET_PLAYER:
             doPlayerFrame();
-            break;
-        case ET_BULLET:
-            doBulletFrame(id);
             break;
         case ET_ENEMY_BASIC:
             doBasicFrame(id);
@@ -32,4 +26,5 @@ void doEntityFrame(int id) {
     collidesWithMap(id, &entity_z);
     entities[id].vel.z = 0.5*(entity_z.z - entities[id].pos.z);
     entities[id].pos = vectorAdd(entities[id].pos, entities[id].vel);
+    if (entities[id].cooldown) entities[id].cooldown--;
 }

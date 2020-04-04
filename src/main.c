@@ -15,6 +15,8 @@
 
 #define PLAYER_ID 0
 
+#define DEADZONE 25
+
 #include "common.h"
 
 struct map cur_map;
@@ -22,8 +24,11 @@ struct map cur_map;
 struct entity entities[10];
 int entities_size;
 
+struct projectile *projectiles;
+
 #include "vector.c"
 
+#include "projectiles.c"
 #include "input.c"
 #include "model.c"
 #include "gfx.c"
@@ -60,6 +65,9 @@ int main(int argc, char **argv) {
 
         getInput(state);
 
+        for (struct projectile *cur = projectiles; cur; cur = cur->next) {
+            doProjectileFrame(cur);
+        }
         for (int i = 0; i < entities_size; i++) {
             doEntityFrame(i);
         }
