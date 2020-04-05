@@ -25,7 +25,7 @@ void getInput(cont_state_t *state) {
     }
     entities[PLAYER_ID].vel = vectorScale(entities[PLAYER_ID].speed, entities[PLAYER_ID].vel);
 
-    if (state->rtrig > DEADZONE) {
+    if (state->buttons & CONT_A || state->buttons & CONT_B || state->buttons & CONT_X || state->buttons & CONT_Y) {
         if (entities[PLAYER_ID].cooldown <= 0) {
             struct projectile proj = {
                 .pos = entities[PLAYER_ID].pos,
@@ -35,7 +35,8 @@ void getInput(cont_state_t *state) {
                 .scale = 0.1,
                 .hit_radius = 0.9375,
                 .damage = 1,
-                .next = NULL
+                .next = NULL,
+                .prev = NULL
             };
             newProjectile(projectiles, proj);
             entities[PLAYER_ID].cooldown = 60;

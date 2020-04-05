@@ -58,6 +58,7 @@ struct projectile {
     int damage;
 
     struct projectile *next;
+    struct projectile *prev;
 };
 
 enum entityType {

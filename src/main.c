@@ -28,11 +28,11 @@ struct projectile *projectiles;
 
 #include "vector.c"
 
+#include "physics.c"
 #include "projectiles.c"
 #include "input.c"
 #include "model.c"
 #include "gfx.c"
-#include "physics.c"
 #include "entity.c"
 
 extern uint8 romdisk[];
@@ -43,6 +43,7 @@ int main(int argc, char **argv) {
 
     entities[PLAYER_ID].pos.z = 15;
     entities[PLAYER_ID].model = loadWavefrontModel("/rd/player.obj", "/rd/player.vq", VERTEX_ALL, 1024);
+    entities[PLAYER_ID].health = 10;
     entities[PLAYER_ID].scale = 0.24;
     entities[PLAYER_ID].speed = 0.05;
     entities[PLAYER_ID].hit_radius = 0.9375;
@@ -50,6 +51,7 @@ int main(int argc, char **argv) {
 
     entities[1].pos.z = 15;
     entities[1].model = loadWavefrontModel("/rd/player.obj", "/rd/player.vq", VERTEX_ALL, 1024);
+    entities[1].health = 3;
     entities[1].scale = 0.24;
     entities[1].speed = 0.02;
     entities[1].hit_radius = 0.9375;
@@ -70,6 +72,20 @@ int main(int argc, char **argv) {
         }
         for (int i = 0; i < entities_size; i++) {
             doEntityFrame(i);
+
+            if (entities[i].health <= 0) {
+                if (i != PLAYER_ID) {
+                    entities_size--;
+                    for (int j = i; j < entities_size; j++) {
+                        entities[j] = entities[j+1];
+                    }
+                    i--;
+                }
+                else {
+                    entities[i].health = 10;
+                    printf("player ded\n");
+                }
+            }
         }
 
         drawFrame();
