@@ -137,3 +137,20 @@ void doEntityFrame(int id) {
     entities[id].pos = vectorAdd(entities[id].pos, entities[id].vel);
     if (entities[id].cooldown) entities[id].cooldown--;
 }
+
+int checkDeadEntity(int id) {
+    if (entities[id].health <= 0) {
+        if (id != PLAYER_ID) {
+            entities_size--;
+            for (int j = id; j < entities_size; j++) {
+                entities[j] = entities[j+1];
+            }
+            id--;
+        }
+        else {
+            entities[id].health = 10;
+            printf("player ded\n");
+        }
+    }
+    return id;
+}

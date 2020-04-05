@@ -16,7 +16,7 @@ void gfxInit() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
-    GLfloat light_position[] = { 1.4, 1.0, 1.6, 0.0 };
+    GLfloat light_position[] = { 3.4, 1.0, 3.6, 0.0 };
     GLfloat light_ambient[] = { 0.2, 0.2, 0.2, 1 };
     GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1 };
     GLfloat light_specular[] = { 0.6, 0.6, 0.6, 1 };

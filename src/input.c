@@ -25,7 +25,7 @@ void getInput(cont_state_t *state) {
     }
     entities[PLAYER_ID].vel = vectorScale(entities[PLAYER_ID].speed, entities[PLAYER_ID].vel);
 
-    if (state->buttons & CONT_A || state->buttons & CONT_B || state->buttons & CONT_X || state->buttons & CONT_Y) {
+    if (vectorLenSquared(entities[PLAYER_ID].dir)) {
         if (entities[PLAYER_ID].cooldown <= 0) {
             struct projectile proj = {
                 .pos = entities[PLAYER_ID].pos,

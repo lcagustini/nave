@@ -2,14 +2,12 @@ struct model loadWavefrontModel(const char *obj_filename, const char *texture_fi
     struct model model = {};
 
     // NOTE: Objects bigger than the constants are undefined behavior
-    model.vertices = (struct vector *) malloc(MAX_OBJ_VERTICES * sizeof(struct vector));
-    model.faces = (struct face *) malloc(MAX_OBJ_FACES * sizeof(struct face));
-    model.normals = (struct normal *) malloc(MAX_OBJ_VERTICES * sizeof(struct normal));
-    model.texture_coords = (struct textureCoord *) malloc(MAX_OBJ_VERTICES * sizeof(struct textureCoord));
+    model.vertices = malloc(MAX_OBJ_VERTICES * sizeof(struct vector));
+    model.faces = malloc(MAX_OBJ_FACES * sizeof(struct face));
+    model.normals = malloc(MAX_OBJ_VERTICES * sizeof(struct normal));
+    model.texture_coords = malloc(MAX_OBJ_VERTICES * sizeof(struct textureCoord));
 
     if (face_type == VERTEX_ALL || face_type == VERTEX_TEXTURE) {
-        // NOTE: this can be freed if it`s not a map model
-
         // normal texture
         {
             FILE *f = fopen(texture_filename, "rb");
@@ -86,6 +84,11 @@ struct model loadWavefrontModel(const char *obj_filename, const char *texture_fi
             model.faces[model.num_faces++] = face;
         }
     }
+
+    model.vertices = realloc(model.vertices, (model.num_vertices+1) * sizeof(struct vector));
+    model.faces = realloc(model.faces, (model.num_faces+1) * sizeof(struct face));
+    model.normals = realloc(model.normals, (model.num_normals+1) * sizeof(struct normal));
+    model.texture_coords = realloc(model.texture_coords, (model.num_texture_coords+1) * sizeof(struct textureCoord));
 
     return model;
 }

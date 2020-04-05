@@ -11,7 +11,7 @@
 #define MAX_OBJ_VERTICES 1000
 #define MAX_OBJ_FACES 1000
 
-#define MAP_SCALE 1
+#define MAP_SCALE 0.25
 
 #define PLAYER_ID 0
 
@@ -42,24 +42,36 @@ int main(int argc, char **argv) {
     gfxInit();
 
     entities[PLAYER_ID].pos.z = 15;
-    entities[PLAYER_ID].model = loadWavefrontModel("/rd/player.obj", "/rd/player.vq", VERTEX_ALL, 1024);
+    entities[PLAYER_ID].model = loadWavefrontModel("/rd/player.obj", "/rd/player.vq", VERTEX_ALL, 256);
     entities[PLAYER_ID].health = 10;
     entities[PLAYER_ID].scale = 0.24;
     entities[PLAYER_ID].speed = 0.05;
     entities[PLAYER_ID].hit_radius = 0.9375;
     entities[PLAYER_ID].type = ET_PLAYER;
 
+    entities[1].pos.x = 1;
+    entities[1].pos.y = -3;
     entities[1].pos.z = 15;
-    entities[1].model = loadWavefrontModel("/rd/player.obj", "/rd/player.vq", VERTEX_ALL, 1024);
+    entities[1].model = loadWavefrontModel("/rd/player.obj", "/rd/player.vq", VERTEX_ALL, 256);
     entities[1].health = 3;
     entities[1].scale = 0.24;
     entities[1].speed = 0.02;
     entities[1].hit_radius = 0.9375;
     entities[1].type = ET_ENEMY_BASIC;
 
-    entities_size = 2;
+    entities[2].pos.x = 1;
+    entities[2].pos.y = 3;
+    entities[2].pos.z = 15;
+    entities[2].model = loadWavefrontModel("/rd/player.obj", "/rd/player.vq", VERTEX_ALL, 256);
+    entities[2].health = 3;
+    entities[2].scale = 0.24;
+    entities[2].speed = 0.02;
+    entities[2].hit_radius = 0.9375;
+    entities[2].type = ET_ENEMY_BASIC;
 
-    cur_map.model = loadWavefrontModel("/rd/map.obj", "/rd/map.vq", VERTEX_ALL, 1024);
+    entities_size = 3;
+
+    cur_map.model = loadWavefrontModel("/rd/map.obj", "/rd/map.vq", VERTEX_ALL, 512);
 
     while (1) {
         maple_device_t *cont = maple_enum_type(0, MAPLE_FUNC_CONTROLLER);
@@ -72,20 +84,7 @@ int main(int argc, char **argv) {
         }
         for (int i = 0; i < entities_size; i++) {
             doEntityFrame(i);
-
-            if (entities[i].health <= 0) {
-                if (i != PLAYER_ID) {
-                    entities_size--;
-                    for (int j = i; j < entities_size; j++) {
-                        entities[j] = entities[j+1];
-                    }
-                    i--;
-                }
-                else {
-                    entities[i].health = 10;
-                    printf("player ded\n");
-                }
-            }
+            i = checkDeadEntity(i);
         }
 
         drawFrame();
