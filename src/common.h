@@ -45,6 +45,11 @@ struct quaternion {
     float z;
 };
 
+enum gamestate {
+    GS_TITLE,
+    GS_GAME,
+};
+
 struct projectile {
     struct vector pos;
     struct vector vel;
@@ -80,6 +85,7 @@ struct entity {
     float hit_radius;
 
     int health;
+    int damage;
 
     int cooldown;
 

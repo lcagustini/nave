@@ -1,3 +1,11 @@
+void destroyModel(struct model model) {
+    free(model.vertices);
+    free(model.faces);
+    free(model.normals);
+    free(model.texture_coords);
+    glDeleteTextures(1, &model.texture_id);
+}
+
 struct model loadWavefrontModel(const char *obj_filename, const char *texture_filename, enum faceType face_type, int texture_size) {
     struct model model = {};
 
@@ -11,12 +19,12 @@ struct model loadWavefrontModel(const char *obj_filename, const char *texture_fi
         // normal texture
         {
             FILE *f = fopen(texture_filename, "rb");
-            fseek(f, 0, SEEK_END);
-            long fsize = ftell(f);
-            fseek(f, 0, SEEK_SET);  /* same as rewind(f); */
 
-            char *sur = malloc(fsize);
-            fread(sur, 1, fsize, f);
+            struct stat st;
+            stat(texture_filename, &st);
+
+            char *sur = malloc(st.st_size);
+            fread(sur, 1, st.st_size, f);
             fclose(f);
 
             assert(sur);
@@ -31,7 +39,7 @@ struct model loadWavefrontModel(const char *obj_filename, const char *texture_fi
                     texture_size,           /* Texture Width */
                     texture_size,           /* Texture Height */
                     0,             /* This bit must be set to 0 */
-                    fsize, /* Compressed Texture Size*/
+                    st.st_size, /* Compressed Texture Size*/
                     sur);       /* Address of texture data in RAM: OpenGL will load the texture into VRAM for you.
                                    Because of this, make sure to call glDeleteTextures() as needed, as that will
                                    free the VRAM allocated for the texture. */
@@ -84,6 +92,7 @@ struct model loadWavefrontModel(const char *obj_filename, const char *texture_fi
             model.faces[model.num_faces++] = face;
         }
     }
+    fclose(f);
 
     model.vertices = realloc(model.vertices, (model.num_vertices+1) * sizeof(struct vector));
     model.faces = realloc(model.faces, (model.num_faces+1) * sizeof(struct face));

@@ -1,0 +1,8 @@
+#define MAX_OBJ_VERTICES 1000
+#define MAX_OBJ_FACES 1000
+
+#define MAP_SCALE 0.25
+
+#define PLAYER_ID 0
+
+#define DEADZONE 25

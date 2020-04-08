@@ -103,6 +103,8 @@ void entityCollidesWithPlayer(int id) {
         v = vectorScale(entities[id].speed, v);
 
         entities[id].vel = vectorAdd(entities[id].vel, v);
+
+        entities[PLAYER_ID].health -= entities[id].damage;
     }
 }
 
@@ -148,8 +150,7 @@ int checkDeadEntity(int id) {
             id--;
         }
         else {
-            entities[id].health = 10;
-            printf("player ded\n");
+            cur_gs = GS_TITLE;
         }
     }
     return id;
