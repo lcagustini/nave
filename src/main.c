@@ -11,7 +11,7 @@
 #include <stdbool.h>
 
 #include "config.h"
-#include "common.h"
+#include "types.h"
 #include "globals.h"
 
 #include "vector.c"
