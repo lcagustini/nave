@@ -34,6 +34,7 @@ struct model {
 enum faceType {
     VERTEX_ONLY,
     VERTEX_NORMAL,
+    VERTEX_TEXTURE,
     VERTEX_ALL,
     VERTEX_ALL_ALPHA
 };
@@ -92,13 +93,6 @@ struct entity {
     enum entityType type;
 };
 
-enum map_grid_cell {
-    MGC_WALL,
-    MGC_FLOOR,
-};
-
 struct map {
-    int models[2];
-
-    int grid[MAP_SIZE][MAP_SIZE];
+    int model;
 };

@@ -3,80 +3,75 @@ void entityCollidesWithMap(int id, struct vector *max_z) {
     struct vector rotation_points[4] = {{-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}};
     struct vector rotation_normals[4] = {{-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}};
 
-    for (int x = 0; x < MAP_SIZE; x++) {
-        for (int y = 0; y < MAP_SIZE; y++) {
-            struct vector cell_pos = {MAP_TRANSLATE_FACTOR*x, MAP_TRANSLATE_FACTOR*y, 0};
-            for (int i = 0; i < loaded_models[cur_map.models[cur_map.grid[x][y]]].num_faces; i++) {
-                struct face *cur = &loaded_models[cur_map.models[cur_map.grid[x][y]]].faces[i];
+    for (int i = 0; i < loaded_models[cur_map.model].num_faces; i++) {
+        struct face *cur = &loaded_models[cur_map.model].faces[i];
 
-                struct vector vertex0 = vectorAdd(vectorScale(MAP_SCALE, loaded_models[cur_map.models[cur_map.grid[x][y]]].vertices[cur->vertices[0]]), cell_pos);
-                struct vector vertex1 = vectorAdd(vectorScale(MAP_SCALE, loaded_models[cur_map.models[cur_map.grid[x][y]]].vertices[cur->vertices[1]]), cell_pos);
-                struct vector vertex2 = vectorAdd(vectorScale(MAP_SCALE, loaded_models[cur_map.models[cur_map.grid[x][y]]].vertices[cur->vertices[2]]), cell_pos);
+        struct vector vertex0 = vectorScale(MAP_SCALE, loaded_models[cur_map.model].vertices[cur->vertices[0]]);
+        struct vector vertex1 = vectorScale(MAP_SCALE, loaded_models[cur_map.model].vertices[cur->vertices[1]]);
+        struct vector vertex2 = vectorScale(MAP_SCALE, loaded_models[cur_map.model].vertices[cur->vertices[2]]);
 
-                struct vector v1 = vectorSubtract(vertex2, vertex0);
-                struct vector v2 = vectorSubtract(vertex1, vertex0);
-                struct vector normal = vectorCross(v1, v2);
-                vectorNormalize(&normal);
-                if (normal.z < 0) {
-                    normal = vectorScale(-1, normal);
-                }
+        struct vector v1 = vectorSubtract(vertex2, vertex0);
+        struct vector v2 = vectorSubtract(vertex1, vertex0);
+        struct vector normal = vectorCross(v1, v2);
+        vectorNormalize(&normal);
+        if (normal.z < 0) {
+            normal = vectorScale(-1, normal);
+        }
 
-                struct vector up = {0, 0, 1};
+        struct vector up = {0, 0, 1};
 
-                float cosine = vectorDot(normal, up);
+        float cosine = vectorDot(normal, up);
 
-                float angle = acos(cosine) * 180 / M_PI;
-                float scaled_radius = entities[id].hit_radius * entities[id].scale;
+        float angle = acos(cosine) * 180 / M_PI;
+        float scaled_radius = entities[id].hit_radius * entities[id].scale;
 
-                // walls
-                if (angle > 60 &&
-                        (vertex0.z > next_pos.z + 0.03 ||
-                         vertex1.z > next_pos.z + 0.03 ||
-                         vertex2.z > next_pos.z + 0.03)) {
-                    bool collides = sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2);
+        // walls
+        if (angle > 60 &&
+                (vertex0.z > next_pos.z + 0.03 ||
+                 vertex1.z > next_pos.z + 0.03 ||
+                 vertex2.z > next_pos.z + 0.03)) {
+            bool collides = sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2);
 
-                    if (collides) {
-                        struct vector v = vectorSubtract(entities[id].pos, vertex0);
-                        float d = vectorDot(v, normal);
-                        struct vector collision = vectorScale(d, normal);
+            if (collides) {
+                struct vector v = vectorSubtract(entities[id].pos, vertex0);
+                float d = vectorDot(v, normal);
+                struct vector collision = vectorScale(d, normal);
 
-                        struct vector reaction_v = vectorAdd(entities[id].vel, collision);
-                        entities[id].vel.x = reaction_v.x * entities[id].vel.x > 0 ? reaction_v.x : 0;
-                        entities[id].vel.y = reaction_v.y * entities[id].vel.y > 0 ? reaction_v.y : 0;
-                        entities[id].vel.z = reaction_v.z * entities[id].vel.z > 0 ? reaction_v.z : 0;
+                struct vector reaction_v = vectorAdd(entities[id].vel, collision);
+                entities[id].vel.x = reaction_v.x * entities[id].vel.x > 0 ? reaction_v.x : 0;
+                entities[id].vel.y = reaction_v.y * entities[id].vel.y > 0 ? reaction_v.y : 0;
+                entities[id].vel.z = reaction_v.z * entities[id].vel.z > 0 ? reaction_v.z : 0;
+            }
+        }
+
+        // floors
+        else {
+            struct vector sky[4] = {
+                {entities[id].pos.x + scaled_radius, entities[id].pos.y, 200},
+                {entities[id].pos.x - scaled_radius, entities[id].pos.y, 200},
+                {entities[id].pos.x, entities[id].pos.y + scaled_radius, 200},
+                {entities[id].pos.x, entities[id].pos.y - scaled_radius, 200}
+            };
+
+            struct vector ground = {0, 0, -1};
+
+            struct vector intersect_v;
+            for (int j = 0; j < 4; j++) {
+                bool intersect = rayIntersectsTriangle(sky[j], ground, cur_map.model, cur, &intersect_v);
+                if (intersect) {
+                    // only false if out of bounds
+                    if (rotation_points[j].z < intersect_v.z) {
+                        rotation_points[j] = intersect_v;
+                        rotation_normals[j] = normal;
                     }
                 }
+            }
 
-                // floors
-                else {
-                    struct vector sky[4] = {
-                        {entities[id].pos.x + scaled_radius, entities[id].pos.y, 200},
-                        {entities[id].pos.x - scaled_radius, entities[id].pos.y, 200},
-                        {entities[id].pos.x, entities[id].pos.y + scaled_radius, 200},
-                        {entities[id].pos.x, entities[id].pos.y - scaled_radius, 200}
-                    };
-
-                    struct vector ground = {0, 0, -1};
-
-                    struct vector intersect_v;
-                    for (int j = 0; j < 4; j++) {
-                        bool intersect = rayIntersectsTriangle(sky[j], ground, cur_map.grid[x][y], vertex0, vertex1, vertex2, &intersect_v);
-                        if (intersect) {
-                            // only false if out of bounds
-                            if (rotation_points[j].z < intersect_v.z) {
-                                rotation_points[j] = intersect_v;
-                                rotation_normals[j] = normal;
-                            }
-                        }
-                    }
-
-                    struct vector sky_center = {entities[id].pos.x, entities[id].pos.y, 200};
-                    bool intersect = rayIntersectsTriangle(sky_center, ground, cur_map.grid[x][y], vertex0, vertex1, vertex2, &intersect_v);
-                    if (intersect) {
-                        if (max_z->z < intersect_v.z) {
-                            *max_z = intersect_v;
-                        }
-                    }
+            struct vector sky_center = {entities[id].pos.x, entities[id].pos.y, 200};
+            bool intersect = rayIntersectsTriangle(sky_center, ground, cur_map.model, cur, &intersect_v);
+            if (intersect) {
+                if (max_z->z < intersect_v.z) {
+                    *max_z = intersect_v;
                 }
             }
         }

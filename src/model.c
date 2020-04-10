@@ -16,37 +16,7 @@ struct model loadWavefrontModel(const char *obj_filename, const char *texture_fi
     model.texture_coords = malloc(MAX_OBJ_VERTICES * sizeof(struct textureCoord));
 
     if (face_type == VERTEX_ALL || face_type == VERTEX_ALL_ALPHA) {
-        // normal texture
-        {
-            FILE *f = fopen(texture_filename, "rb");
-
-            struct stat st;
-            stat(texture_filename, &st);
-
-            char *sur = malloc(st.st_size);
-            fread(sur, 1, st.st_size, f);
-            fclose(f);
-
-            assert(sur);
-
-            glGenTextures(1, &model.texture_id);
-            glBindTexture(GL_TEXTURE_2D, model.texture_id);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glCompressedTexImage2D(GL_TEXTURE_2D,  /* This must be GL_TEXTURE_2D */
-                    0,             /* 0 = Texture does not contain Mip-Maps */
-                    face_type == VERTEX_ALL ? GL_UNSIGNED_SHORT_5_6_5_VQ_TWID : GL_UNSIGNED_SHORT_1_5_5_5_VQ_TWID,        /* GL Compressed Color Format */
-                    texture_size,           /* Texture Width */
-                    texture_size,           /* Texture Height */
-                    0,             /* This bit must be set to 0 */
-                    st.st_size, /* Compressed Texture Size*/
-                    sur);       /* Address of texture data in RAM: OpenGL will load the texture into VRAM for you.
-                                   Because of this, make sure to call glDeleteTextures() as needed, as that will
-                                   free the VRAM allocated for the texture. */
-            glBindTexture(GL_TEXTURE_2D, 0);
-
-            free(sur);
-        }
+        model.texture_id = loadTexture(texture_filename, face_type, texture_size);
     }
 
     FILE *f = fopen(obj_filename, "r");
@@ -76,7 +46,7 @@ struct model loadWavefrontModel(const char *obj_filename, const char *texture_fi
             } else if (face_type == VERTEX_NORMAL) {
                 fscanf(f, " %d//%d %d//%d %d//%d", &face.vertices[0], &face.normals[0], &face.vertices[1],
                         &face.normals[1], &face.vertices[2], &face.normals[2]);
-            } else if (face_type == VERTEX_ALL || face_type == VERTEX_ALL_ALPHA) {
+            } else if (face_type == VERTEX_ALL || face_type == VERTEX_ALL_ALPHA || face_type == VERTEX_TEXTURE) {
                 fscanf(f, " %d/%d/%d %d/%d/%d %d/%d/%d", &face.vertices[0], &face.texture_coords[0],
                         &face.normals[0], &face.vertices[1],
                         &face.texture_coords[1], &face.normals[1],

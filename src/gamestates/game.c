@@ -6,15 +6,10 @@ void drawFrame() {
 
     glTranslatef(-entities[PLAYER_ID].pos.x, -entities[PLAYER_ID].pos.y, -14.0f);
 
-    for (int x = 0; x < MAP_SIZE; x++) {
-        for (int y = 0; y < MAP_SIZE; y++) {
-            glPushMatrix();
-            glTranslatef(MAP_TRANSLATE_FACTOR*x, MAP_TRANSLATE_FACTOR*y, 0);
-            glScalef(MAP_SCALE, MAP_SCALE, MAP_SCALE);
-            drawModel(cur_map.models[cur_map.grid[x][y]]);
-            glPopMatrix();
-        }
-    }
+    glPushMatrix();
+    glScalef(MAP_SCALE, MAP_SCALE, MAP_SCALE);
+    drawModel(cur_map.model);
+    glPopMatrix();
 
     for (struct projectile *cur = projectiles; cur; cur = cur->next) {
         glPushMatrix();
@@ -45,8 +40,10 @@ void runGame() {
     assert(loaded_models_n == 0);
 
     loaded_models[loaded_models_n++] = loadWavefrontModel("/game/player.obj", "/game/player.vq", VERTEX_ALL, 256);
-    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/floor.obj", "/game/map.vq", VERTEX_ALL, 512);
-    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/wall.obj", "/game/map.vq", VERTEX_ALL, 512);
+    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/floor.obj", "", VERTEX_TEXTURE, 512);
+    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/wall.obj", "", VERTEX_TEXTURE, 512);
+
+    generateMap("/game/map.vq");
 
     umountRomdisk("/game");
 
@@ -95,11 +92,6 @@ void runGame() {
     entities[2].type = ET_ENEMY_BASIC;
 #endif
     entities_size = 1;
-
-    cur_map.models[MGC_FLOOR] = 1;
-    cur_map.models[MGC_WALL] = 2;
-
-    generateMap();
 
     while (cur_gs == GS_GAME) {
         maple_device_t *cont = maple_enum_type(0, MAPLE_FUNC_CONTROLLER);

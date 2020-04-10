@@ -16,8 +16,8 @@
 
 #include "vector.c"
 #include "memory.c"
-#include "model.c"
 #include "gfx.c"
+#include "model.c"
 
 #include "game/map.c"
 #include "game/physics.c"

@@ -85,3 +85,37 @@ void drawModel(int model) {
 
     glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+GLuint loadTexture(const char *texture_filename, enum faceType face_type, int texture_size) {
+    GLuint texture_id;
+    FILE *f = fopen(texture_filename, "rb");
+
+    struct stat st;
+    stat(texture_filename, &st);
+
+    char *sur = malloc(st.st_size);
+    fread(sur, 1, st.st_size, f);
+    fclose(f);
+
+    assert(sur);
+
+    glGenTextures(1, &texture_id);
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glCompressedTexImage2D(GL_TEXTURE_2D,  /* This must be GL_TEXTURE_2D */
+            0,             /* 0 = Texture does not contain Mip-Maps */
+            face_type == VERTEX_ALL ? GL_UNSIGNED_SHORT_5_6_5_VQ_TWID : GL_UNSIGNED_SHORT_1_5_5_5_VQ_TWID,        /* GL Compressed Color Format */
+            texture_size,           /* Texture Width */
+            texture_size,           /* Texture Height */
+            0,             /* This bit must be set to 0 */
+            st.st_size, /* Compressed Texture Size*/
+            sur);       /* Address of texture data in RAM: OpenGL will load the texture into VRAM for you.
+                           Because of this, make sure to call glDeleteTextures() as needed, as that will
+                           free the VRAM allocated for the texture. */
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    free(sur);
+
+    return texture_id;
+}

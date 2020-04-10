@@ -45,25 +45,20 @@ bool projectileCollidesWithEntity(struct projectile *cur) {
 bool projectileCollidesWithMap(struct projectile *proj) {
     struct vector next_pos = vectorAdd(proj->pos, vectorScale(proj->speed, proj->vel));
 
-    for (int x = 0; x < MAP_SIZE; x++) {
-        for (int y = 0; y < MAP_SIZE; y++) {
-            struct vector cell_pos = {MAP_TRANSLATE_FACTOR*x, MAP_TRANSLATE_FACTOR*y, 0};
-            for (int i = 0; i < loaded_models[cur_map.models[cur_map.grid[x][y]]].num_faces; i++) {
-                struct face *cur = &loaded_models[cur_map.models[cur_map.grid[x][y]]].faces[i];
+    for (int i = 0; i < loaded_models[cur_map.model].num_faces; i++) {
+        struct face *cur = &loaded_models[cur_map.model].faces[i];
 
-                struct vector vertex0 = vectorAdd(vectorScale(MAP_SCALE, loaded_models[cur_map.models[cur_map.grid[x][y]]].vertices[cur->vertices[0]]), cell_pos);
-                struct vector vertex1 = vectorAdd(vectorScale(MAP_SCALE, loaded_models[cur_map.models[cur_map.grid[x][y]]].vertices[cur->vertices[1]]), cell_pos);
-                struct vector vertex2 = vectorAdd(vectorScale(MAP_SCALE, loaded_models[cur_map.models[cur_map.grid[x][y]]].vertices[cur->vertices[2]]), cell_pos);
+        struct vector vertex0 = vectorScale(MAP_SCALE, loaded_models[cur_map.model].vertices[cur->vertices[0]]);
+        struct vector vertex1 = vectorScale(MAP_SCALE, loaded_models[cur_map.model].vertices[cur->vertices[1]]);
+        struct vector vertex2 = vectorScale(MAP_SCALE, loaded_models[cur_map.model].vertices[cur->vertices[2]]);
 
-                float scaled_radius = proj->hit_radius * proj->scale;
+        float scaled_radius = proj->hit_radius * proj->scale;
 
-                bool collides = sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2);
+        bool collides = sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2);
 
-                if (collides) {
-                    deleteProjectile(proj);
-                    return true;
-                }
-            }
+        if (collides) {
+            deleteProjectile(proj);
+            return true;
         }
     }
     return false;
