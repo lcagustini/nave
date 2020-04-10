@@ -34,8 +34,8 @@ struct model {
 enum faceType {
     VERTEX_ONLY,
     VERTEX_NORMAL,
-    VERTEX_TEXTURE,
-    VERTEX_ALL
+    VERTEX_ALL,
+    VERTEX_ALL_ALPHA
 };
 
 struct quaternion {
@@ -54,7 +54,7 @@ struct projectile {
     struct vector pos;
     struct vector vel;
 
-    struct model model;
+    int model;
     float speed;
     float scale;
 
@@ -76,7 +76,7 @@ struct entity {
     struct vector vel;
     struct vector dir;
 
-    struct model model;
+    int model;
     float scale;
 
     struct quaternion rotation;
@@ -92,6 +92,13 @@ struct entity {
     enum entityType type;
 };
 
+enum map_grid_cell {
+    MGC_WALL,
+    MGC_FLOOR,
+};
+
 struct map {
-    struct model model;
+    int models[2];
+
+    int grid[MAP_SIZE][MAP_SIZE];
 };

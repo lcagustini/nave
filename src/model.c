@@ -1,9 +1,9 @@
-void destroyModel(struct model model) {
-    free(model.vertices);
-    free(model.faces);
-    free(model.normals);
-    free(model.texture_coords);
-    glDeleteTextures(1, &model.texture_id);
+void destroyModel(int model) {
+    free(loaded_models[model].vertices);
+    free(loaded_models[model].faces);
+    free(loaded_models[model].normals);
+    free(loaded_models[model].texture_coords);
+    glDeleteTextures(1, &loaded_models[model].texture_id);
 }
 
 struct model loadWavefrontModel(const char *obj_filename, const char *texture_filename, enum faceType face_type, int texture_size) {
@@ -15,7 +15,7 @@ struct model loadWavefrontModel(const char *obj_filename, const char *texture_fi
     model.normals = malloc(MAX_OBJ_VERTICES * sizeof(struct normal));
     model.texture_coords = malloc(MAX_OBJ_VERTICES * sizeof(struct textureCoord));
 
-    if (face_type == VERTEX_ALL || face_type == VERTEX_TEXTURE) {
+    if (face_type == VERTEX_ALL || face_type == VERTEX_ALL_ALPHA) {
         // normal texture
         {
             FILE *f = fopen(texture_filename, "rb");
@@ -35,7 +35,7 @@ struct model loadWavefrontModel(const char *obj_filename, const char *texture_fi
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glCompressedTexImage2D(GL_TEXTURE_2D,  /* This must be GL_TEXTURE_2D */
                     0,             /* 0 = Texture does not contain Mip-Maps */
-                    GL_UNSIGNED_SHORT_5_6_5_VQ_TWID,        /* GL Compressed Color Format */
+                    face_type == VERTEX_ALL ? GL_UNSIGNED_SHORT_5_6_5_VQ_TWID : GL_UNSIGNED_SHORT_1_5_5_5_VQ_TWID,        /* GL Compressed Color Format */
                     texture_size,           /* Texture Width */
                     texture_size,           /* Texture Height */
                     0,             /* This bit must be set to 0 */
@@ -76,10 +76,7 @@ struct model loadWavefrontModel(const char *obj_filename, const char *texture_fi
             } else if (face_type == VERTEX_NORMAL) {
                 fscanf(f, " %d//%d %d//%d %d//%d", &face.vertices[0], &face.normals[0], &face.vertices[1],
                         &face.normals[1], &face.vertices[2], &face.normals[2]);
-            } else if (face_type == VERTEX_TEXTURE) {
-                // NOTE: not supported
-                assert(false);
-            } else if (face_type == VERTEX_ALL) {
+            } else if (face_type == VERTEX_ALL || face_type == VERTEX_ALL_ALPHA) {
                 fscanf(f, " %d/%d/%d %d/%d/%d %d/%d/%d", &face.vertices[0], &face.texture_coords[0],
                         &face.normals[0], &face.vertices[1],
                         &face.texture_coords[1], &face.normals[1],

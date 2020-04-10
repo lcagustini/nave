@@ -1,17 +1,17 @@
 PROJECT = nave
 
 TARGET = $(PROJECT).elf
-OBJS = main.o romdisk.o
+OBJS = main.o
 
 CFLAGS= -Ofast -std=gnu99
 
-cdi: $(TARGET)
+cdi: romdisk.img $(TARGET)
 	IP_TEMPLATE_FILE=/opt/toolchains/dc/kos/utils/makeip/IP.TMPL $(KOS_BASE)/utils/makeip/makeip ip.txt IP.BIN
-	mkisofs -C 0,11702 -V $(PROJECT) -G IP.BIN -r -J -l -o $(PROJECT).iso 1ST_READ.BIN
+	mkisofs -C 0,11702 -V $(PROJECT) -G IP.BIN -r -J -l -o $(PROJECT).iso 1ST_READ.BIN bin/level1_romdisk.img bin/title_romdisk.img
 	$(KOS_BASE)/utils/cdi4dc/cdi4dc $(PROJECT).iso $(PROJECT).cdi
 	@rm $(PROJECT).iso IP.BIN 1ST_READ.BIN
 
-$(TARGET): $(OBJS) 
+$(TARGET): $(OBJS)
 	$(KOS_CC) $(KOS_CFLAGS) -std=c99 $(KOS_LDFLAGS) -o bin/$(TARGET) $(KOS_START) \
 		$(patsubst %, bin/%, $(OBJS)) $(OBJEXTRA) -L$(KOS_BASE)/lib -lGL $(KOS_LIBS) -lm -Wall
 	sh-elf-objcopy -R .stack -O binary bin/$(TARGET) bin/output.bin
@@ -20,11 +20,9 @@ $(TARGET): $(OBJS)
 %.o: src/%.c
 	kos-cc $(CFLAGS) -c $< -o bin/$@
 
-romdisk.o: romdisk.img
-	$(KOS_BASE)/utils/bin2o/bin2o bin/romdisk.img romdisk bin/romdisk.o
-
 romdisk.img: gfx
-	$(KOS_GENROMFS) -f bin/romdisk.img -d romdisk -v
+	$(KOS_GENROMFS) -f bin/level1_romdisk.img -d romdisk/level1 -v
+	$(KOS_GENROMFS) -f bin/title_romdisk.img -d romdisk/title -v
 
 gfx: 
 	-rm -rf romdisk/

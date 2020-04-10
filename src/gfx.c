@@ -1,33 +1,3 @@
-void gfxInit() {
-    glKosInit();
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45.0f, 640.0f / 480.0f, 0.1f, 100.0f);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glEnable(GL_TEXTURE_2D);
-    glShadeModel(GL_SMOOTH);
-
-    glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
-    glClearDepth(1.0f);
-
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-
-    GLfloat light_position[] = { 3.4, 1.0, 3.6, 0.0 };
-    GLfloat light_ambient[] = { 0.2, 0.2, 0.2, 1 };
-    GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1 };
-    GLfloat light_specular[] = { 0.6, 0.6, 0.6, 1 };
-    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHTING);
-}
-
 void drawSphere(float r, int UResolution, int VResolution) {
     float startU = 0;
     float startV = 0;
@@ -85,27 +55,27 @@ void drawSphere(float r, int UResolution, int VResolution) {
     glEnd();
 }
 
-void drawModel(struct model model) {
-    glBindTexture(GL_TEXTURE_2D, model.texture_id);
+void drawModel(int model) {
+    glBindTexture(GL_TEXTURE_2D, loaded_models[model].texture_id);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    for (int i = 0; i < model.num_faces; i++) {
-        struct face f = model.faces[i];
+    for (int i = 0; i < loaded_models[model].num_faces; i++) {
+        struct face f = loaded_models[model].faces[i];
 
         glBegin(GL_TRIANGLES);
 
         for (int j = 0; j <= 2; j++) {
-            if (model.num_normals) {
-                struct normal n = model.normals[f.normals[j]];
+            if (loaded_models[model].num_normals) {
+                struct normal n = loaded_models[model].normals[f.normals[j]];
                 glNormal3f(n.x, n.y, n.z);
             }
 
-            if (model.num_texture_coords) {
-                struct textureCoord t = model.texture_coords[f.texture_coords[j]];
+            if (loaded_models[model].num_texture_coords) {
+                struct textureCoord t = loaded_models[model].texture_coords[f.texture_coords[j]];
                 glTexCoord2f(t.x, t.y);
             }
 
-            struct vector v = model.vertices[f.vertices[j]];
+            struct vector v = loaded_models[model].vertices[f.vertices[j]];
 
             glVertex3f(v.x, v.y, v.z);
         }
@@ -114,41 +84,4 @@ void drawModel(struct model model) {
     }
 
     glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void drawFrame() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glTranslatef(-entities[PLAYER_ID].pos.x, -entities[PLAYER_ID].pos.y, -14.0f);
-
-    glPushMatrix();
-    glScalef(MAP_SCALE, MAP_SCALE, MAP_SCALE);
-    drawModel(cur_map.model);
-    glPopMatrix();
-
-    for (struct projectile *cur = projectiles; cur; cur = cur->next) {
-        glPushMatrix();
-        glTranslatef(cur->pos.x, cur->pos.y, cur->pos.z);
-        glRotatef(90 + (atan2(cur->vel.y, cur->vel.x) * 180 / M_PI), 0, 0, 1);
-        glScalef(cur->scale, cur->scale, cur->scale);
-        drawModel(cur->model);
-        glPopMatrix();
-    }
-
-    for (int i = 0; i < entities_size; i++) {
-        glPushMatrix();
-        glTranslatef(entities[i].pos.x, entities[i].pos.y, entities[i].pos.z);
-        // From AllegroGL`s math.c
-        glRotatef((2*acos(entities[i].rotation.w)) * 180 / M_PI,
-                entities[i].rotation.x,
-                entities[i].rotation.y,
-                entities[i].rotation.z);
-        glRotatef(90 + (atan2(entities[i].dir.y, entities[i].dir.x) * 180 / M_PI), 0, 0, 1);
-        glScalef(entities[i].scale, entities[i].scale, entities[i].scale);
-        drawModel(entities[i].model);
-        glPopMatrix();
-    }
 }

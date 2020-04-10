@@ -1,4 +1,6 @@
 #include <kos.h>
+#include <stdlib.h>
+#include <sys/dirent.h>
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -13,21 +15,38 @@
 #include "globals.h"
 
 #include "vector.c"
-#include "physics.c"
-#include "projectiles.c"
-#include "input.c"
+#include "memory.c"
 #include "model.c"
 #include "gfx.c"
-#include "entity.c"
+
+#include "game/map.c"
+#include "game/physics.c"
+#include "game/projectiles.c"
+#include "game/input.c"
+#include "game/entity.c"
 
 #include "gamestates/game.c"
 #include "gamestates/title.c"
 
-extern uint8 romdisk[];
-KOS_INIT_ROMDISK(romdisk);
-
 int main(int argc, char **argv) {
-    gfxInit();
+    glKosInit();
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0f, 640.0f / 480.0f, 0.1f, 100.0f);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glEnable(GL_TEXTURE_2D);
+    glShadeModel(GL_SMOOTH);
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearDepth(1.0f);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+
+    srand(time(0));
 
     cur_gs = GS_TITLE;
     while (true) {
@@ -39,7 +58,7 @@ int main(int argc, char **argv) {
                 runGame();
                 break;
             default:
-                return 1;
+                return ARCH_EXIT_MENU;
         }
     }
 
