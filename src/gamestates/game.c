@@ -40,10 +40,10 @@ void runGame() {
     assert(loaded_models_n == 0);
 
     loaded_models[loaded_models_n++] = loadWavefrontModel("/game/player.obj", "/game/player.vq", VERTEX_ALL, 256);
-    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/floor.obj", "", VERTEX_TEXTURE, 512);
-    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/wall.obj", "", VERTEX_TEXTURE, 512);
+    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/floor.obj", "", VERTEX_TEXTURE, 0);
+    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/wall.obj", "", VERTEX_TEXTURE, 0);
 
-    generateMap("/game/map.vq");
+    generateMap("/game/map.vq", 1024);
 
     umountRomdisk("/game");
 
@@ -58,8 +58,8 @@ void runGame() {
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHTING);
 
-    entities[PLAYER_ID].pos.x = 5;
-    entities[PLAYER_ID].pos.y = 5;
+    entities[PLAYER_ID].pos.x = 0;
+    entities[PLAYER_ID].pos.y = 0;
     entities[PLAYER_ID].pos.z = 15;
     entities[PLAYER_ID].model = 0;
     entities[PLAYER_ID].health = 10;
