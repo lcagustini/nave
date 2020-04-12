@@ -112,14 +112,14 @@ break_search:
     final_model.num_texture_coords = 0;
     for (int i = 0; i < MAP_SIZE; i++) {
         for (int j = 0; j < MAP_SIZE; j++) {
-            struct vector pos = {2*i, 2*j, 0};
             if (grid[i][j] != 2) {
+                struct vector pos = {2*i, 2*j, 0};
                 mergeMeshes(&final_model, loaded_models[2], pos); //Model number from order loaded before calling generateMap
             }
         }
     }
     for (int i = 0; i <= loaded_models[1].num_vertices; i++) {
-        loaded_models[1].vertices[i] = vectorScale(MAP_SIZE, loaded_models[1].vertices[i]);
+        loaded_models[1].vertices[i] = vectorScale(MAP_SIZE-1, loaded_models[1].vertices[i]); //Model number from order loaded before calling generateMap
     }
     struct vector floor_offset = {MAP_SIZE, MAP_SIZE, 0};
     mergeMeshes(&final_model, loaded_models[1], floor_offset);
@@ -141,5 +141,5 @@ break_search:
 
     removeDuplicateVertices(cur_map.model);
 
-    printf("final map mesh: v %d f %d\n");
+    printf("final map mesh: v %d f %d\n", loaded_models[cur_map.model].num_vertices, loaded_models[cur_map.model].num_faces);
 }
