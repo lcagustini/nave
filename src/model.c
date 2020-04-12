@@ -3,7 +3,9 @@ void destroyModel(int model) {
     free(loaded_models[model].faces);
     free(loaded_models[model].normals);
     free(loaded_models[model].texture_coords);
-    glDeleteTextures(1, &loaded_models[model].texture_id);
+    if (loaded_models[model].face_type == VERTEX_ALL || loaded_models[model].face_type == VERTEX_ALL_ALPHA) {
+        glDeleteTextures(1, &loaded_models[model].texture_id);
+    }
 }
 
 struct model loadWavefrontModel(const char *obj_filename, const char *texture_filename, enum faceType face_type, int texture_size) {
@@ -14,6 +16,7 @@ struct model loadWavefrontModel(const char *obj_filename, const char *texture_fi
     model.faces = malloc(MAX_OBJ_FACES * sizeof(struct face));
     model.normals = malloc(MAX_OBJ_VERTICES * sizeof(struct normal));
     model.texture_coords = malloc(MAX_OBJ_VERTICES * sizeof(struct textureCoord));
+    model.face_type = face_type;
 
     if (face_type == VERTEX_ALL || face_type == VERTEX_ALL_ALPHA) {
         model.texture_id = loadTexture(texture_filename, face_type, texture_size);

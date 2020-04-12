@@ -19,6 +19,14 @@ struct vector {
     float x, y, z;
 };
 
+enum faceType {
+    VERTEX_ONLY,
+    VERTEX_NORMAL,
+    VERTEX_TEXTURE,
+    VERTEX_ALL,
+    VERTEX_ALL_ALPHA
+};
+
 struct model {
     struct vector *vertices;
     int num_vertices;
@@ -29,14 +37,7 @@ struct model {
     struct textureCoord *texture_coords;
     int num_texture_coords;
     GLuint texture_id;
-};
-
-enum faceType {
-    VERTEX_ONLY,
-    VERTEX_NORMAL,
-    VERTEX_TEXTURE,
-    VERTEX_ALL,
-    VERTEX_ALL_ALPHA
+    enum faceType face_type;
 };
 
 struct quaternion {

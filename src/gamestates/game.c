@@ -68,7 +68,6 @@ void runGame() {
     entities[PLAYER_ID].hit_radius = 0.9375;
     entities[PLAYER_ID].type = ET_PLAYER;
 
-#if 0
     entities[1].pos.x = 1;
     entities[1].pos.y = -3;
     entities[1].pos.z = 15;
@@ -90,8 +89,8 @@ void runGame() {
     entities[2].hit_radius = 0.9375;
     entities[2].damage = 1;
     entities[2].type = ET_ENEMY_BASIC;
-#endif
-    entities_size = 1;
+
+    entities_size = 3;
 
     while (cur_gs == GS_GAME) {
         maple_device_t *cont = maple_enum_type(0, MAPLE_FUNC_CONTROLLER);

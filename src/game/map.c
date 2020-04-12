@@ -1,28 +1,52 @@
-struct model mergeMeshes(struct model in1, struct model in2, struct vector offset) {
-    memcpy(&in1.vertices[in1.num_vertices+1], in2.vertices, (in2.num_vertices+1)*sizeof(struct vector));
+void removeDuplicateVertices(int model) {
+    struct model *cur = &loaded_models[model];
+
+    for (int i = 0; i < cur->num_vertices; i++) {
+        for (int j = i+1; j < cur->num_vertices; j++) {
+            if (vectorLenSquared(vectorSubtract(cur->vertices[i], cur->vertices[j])) <= 0.00001f) {
+                for (int k = 0; k < cur->num_faces; k++) {
+                    for (int l = 0; l < 3; l++) {
+                        if (cur->faces[k].vertices[l] == j) {
+                            cur->faces[k].vertices[l] = i;
+                        }
+                        if (cur->faces[k].vertices[l] == cur->num_vertices) {
+                            cur->faces[k].vertices[l] = j;
+                        }
+                    }
+                }
+
+                cur->vertices[j] = cur->vertices[cur->num_vertices];
+                cur->num_vertices--;
+                j--;
+            }
+        }
+    }
+    cur->vertices = realloc(cur->vertices, (cur->num_vertices+1) * sizeof(struct vector));
+}
+
+void mergeMeshes(struct model *in1, struct model in2, struct vector offset) {
+    memcpy(&in1->vertices[in1->num_vertices+1], in2.vertices, (in2.num_vertices+1)*sizeof(struct vector));
     for (int i = 0; i <= in2.num_vertices; i++) {
-        in1.vertices[in1.num_vertices+1+i] = vectorAdd(in1.vertices[in1.num_vertices+1+i], offset);
+        in1->vertices[in1->num_vertices+1+i] = vectorAdd(in1->vertices[in1->num_vertices+1+i], offset);
     }
 
-    memcpy(&in1.faces[in1.num_faces+1], in2.faces, (in2.num_faces+1)*sizeof(struct face));
+    memcpy(&in1->faces[in1->num_faces+1], in2.faces, (in2.num_faces+1)*sizeof(struct face));
     for (int i = 0; i <= in2.num_faces; i++) {
-        struct face *cur = &in1.faces[in1.num_faces+1+i];
+        struct face *cur = &in1->faces[in1->num_faces+1+i];
         for (int j = 0; j < 3; j++) {
-            cur->vertices[j] += in1.num_vertices+1;
-            cur->normals[j] += in1.num_normals+1;
-            cur->texture_coords[j] += in1.num_texture_coords+1;
+            cur->vertices[j] += in1->num_vertices+1;
+            cur->normals[j] += in1->num_normals+1;
+            cur->texture_coords[j] += in1->num_texture_coords+1;
         }
     }
 
-    memcpy(&in1.normals[in1.num_normals+1], in2.normals, (in2.num_normals+1)*sizeof(struct normal));
-    memcpy(&in1.texture_coords[in1.num_texture_coords+1], in2.texture_coords, (in2.num_texture_coords+1)*sizeof(struct textureCoord));
+    memcpy(&in1->normals[in1->num_normals+1], in2.normals, (in2.num_normals+1)*sizeof(struct normal));
+    memcpy(&in1->texture_coords[in1->num_texture_coords+1], in2.texture_coords, (in2.num_texture_coords+1)*sizeof(struct textureCoord));
 
-    in1.num_vertices += in2.num_vertices+1;
-    in1.num_faces += in2.num_faces+1;
-    in1.num_normals += in2.num_normals+1;
-    in1.num_texture_coords += in2.num_texture_coords+1;
-
-    return in1;
+    in1->num_vertices += in2.num_vertices+1;
+    in1->num_faces += in2.num_faces+1;
+    in1->num_normals += in2.num_normals+1;
+    in1->num_texture_coords += in2.num_texture_coords+1;
 }
 
 void searchGrid(int grid[MAP_SIZE][MAP_SIZE], int x, int y) {
@@ -89,7 +113,7 @@ break_search:
     for (int i = 0; i < MAP_SIZE; i++) {
         for (int j = 0; j < MAP_SIZE; j++) {
             struct vector pos = {2*i, 2*j, 0};
-            final_model = mergeMeshes(final_model, loaded_models[grid[i][j] == 2 ? 1 : 2], pos); //Model number from order loaded before calling generateMap
+            mergeMeshes(&final_model, loaded_models[grid[i][j] == 2 ? 1 : 2], pos); //Model number from order loaded before calling generateMap
         }
     }
     final_model.vertices = realloc(final_model.vertices, (final_model.num_vertices+1) * sizeof(struct vector));
@@ -98,9 +122,13 @@ break_search:
     final_model.texture_coords = realloc(final_model.texture_coords, (final_model.num_texture_coords+1) * sizeof(struct textureCoord));
 
     final_model.texture_id = loadTexture(texture_filename, VERTEX_ALL, 512);
+    final_model.face_type = VERTEX_ALL;
 
     destroyModel(--loaded_models_n);
     destroyModel(--loaded_models_n);
+
     loaded_models[loaded_models_n++] = final_model;
     cur_map.model = loaded_models_n-1;
+
+    removeDuplicateVertices(cur_map.model);
 }
