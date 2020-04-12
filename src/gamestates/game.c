@@ -58,8 +58,8 @@ void runGame() {
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHTING);
 
-    entities[PLAYER_ID].pos.x = 0;
-    entities[PLAYER_ID].pos.y = 0;
+    entities[PLAYER_ID].pos.x = 5;
+    entities[PLAYER_ID].pos.y = 5;
     entities[PLAYER_ID].pos.z = 15;
     entities[PLAYER_ID].model = 0;
     entities[PLAYER_ID].health = 10;
@@ -68,9 +68,8 @@ void runGame() {
     entities[PLAYER_ID].hit_radius = 0.9375;
     entities[PLAYER_ID].type = ET_PLAYER;
 
-#if 0
     entities[1].pos.x = 1;
-    entities[1].pos.y = -3;
+    entities[1].pos.y = 5;
     entities[1].pos.z = 15;
     entities[1].model = 0;
     entities[1].health = 3;
@@ -80,8 +79,8 @@ void runGame() {
     entities[1].damage = 1;
     entities[1].type = ET_ENEMY_BASIC;
 
-    entities[2].pos.x = 1;
-    entities[2].pos.y = 3;
+    entities[2].pos.x = 5;
+    entities[2].pos.y = 1;
     entities[2].pos.z = 15;
     entities[2].model = 0;
     entities[2].health = 3;
@@ -90,8 +89,8 @@ void runGame() {
     entities[2].hit_radius = 0.9375;
     entities[2].damage = 1;
     entities[2].type = ET_ENEMY_BASIC;
-#endif
-    entities_size = 1;
+
+    entities_size = 3;
 
     while (cur_gs == GS_GAME) {
         maple_device_t *cont = maple_enum_type(0, MAPLE_FUNC_CONTROLLER);

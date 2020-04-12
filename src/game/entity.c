@@ -1,7 +1,10 @@
-void entityCollidesWithMap(int id, struct vector *max_z) {
-    struct vector next_pos = vectorAdd(entities[id].pos, entities[id].vel);
+void entityCollidesWithMap(int id, bool vertical) {
+    struct vector masked_vel = {!vertical ? entities[id].vel.x : 0, vertical ? entities[id].vel.y : 0, 0};
+    struct vector next_pos = vectorAdd(entities[id].pos, masked_vel);
+
     struct vector rotation_points[4] = {{-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}};
     struct vector rotation_normals[4] = {{-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}};
+    struct vector max_z = {0, 0, -200};
 
     for (int i = 0; i < loaded_models[cur_map.model].num_faces; i++) {
         struct face *cur = &loaded_models[cur_map.model].faces[i];
@@ -33,14 +36,7 @@ void entityCollidesWithMap(int id, struct vector *max_z) {
             bool collides = sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2);
 
             if (collides) {
-                struct vector v = vectorSubtract(entities[id].pos, vertex0);
-                float d = vectorDot(v, normal);
-                struct vector collision = vectorScale(d, normal);
-
-                struct vector reaction_v = vectorAdd(entities[id].vel, collision);
-                entities[id].vel.x = reaction_v.x * entities[id].vel.x > 0 ? reaction_v.x : 0;
-                entities[id].vel.y = reaction_v.y * entities[id].vel.y > 0 ? reaction_v.y : 0;
-                entities[id].vel.z = reaction_v.z * entities[id].vel.z > 0 ? reaction_v.z : 0;
+                memset(&masked_vel, 0, sizeof(masked_vel));
             }
         }
 
@@ -70,8 +66,8 @@ void entityCollidesWithMap(int id, struct vector *max_z) {
             struct vector sky_center = {entities[id].pos.x, entities[id].pos.y, 200};
             bool intersect = rayIntersectsTriangle(sky_center, ground, cur_map.model, cur, &intersect_v);
             if (intersect) {
-                if (max_z->z < intersect_v.z) {
-                    *max_z = intersect_v;
+                if (max_z.z < intersect_v.z) {
+                    max_z = intersect_v;
                 }
             }
         }
@@ -86,10 +82,13 @@ void entityCollidesWithMap(int id, struct vector *max_z) {
     vectorNormalize(&normal_sum);
     entities[id].rotation = getRotationQuat(up, normal_sum);
 
-    if (vectorLen(entities[id].vel) > entities[id].speed) {
-        vectorNormalize(&entities[id].vel);
-        entities[id].vel = vectorScale(entities[id].speed, entities[id].vel);
+    if (vectorLen(masked_vel) > entities[id].speed) {
+        vectorNormalize(&masked_vel);
+        masked_vel = vectorScale(entities[id].speed, masked_vel);
     }
+
+    masked_vel.z = 0.5*(max_z.z - (entities[id].pos.z - entities[id].scale*entities[id].hit_radius));
+    entities[id].pos = vectorAdd(entities[id].pos, masked_vel);
 }
 
 void entityCollidesWithPlayer(int id) {
@@ -133,10 +132,8 @@ void doEntityFrame(int id) {
             return;
     }
 
-    struct vector entity_z = {0, 0, -200};
-    entityCollidesWithMap(id, &entity_z);
-    entities[id].vel.z = 0.5*(entity_z.z - (entities[id].pos.z - entities[id].scale*entities[id].hit_radius));
-    entities[id].pos = vectorAdd(entities[id].pos, entities[id].vel);
+    entityCollidesWithMap(id, true);
+    entityCollidesWithMap(id, false);
     if (entities[id].cooldown) entities[id].cooldown--;
 }
 
