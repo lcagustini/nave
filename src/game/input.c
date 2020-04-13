@@ -16,6 +16,7 @@ void getInput(cont_state_t *state) {
     }
     vectorNormalize(&entities[PLAYER_ID].dir);
 
+    float g = entities[PLAYER_ID].vel.z;
     memset(&entities[PLAYER_ID].vel, 0, sizeof(entities[PLAYER_ID].vel));
 #if 0
     if (state->joyx > DEADZONE || state->joyx < -DEADZONE) {
@@ -40,6 +41,7 @@ void getInput(cont_state_t *state) {
     vectorNormalize(&entities[PLAYER_ID].vel);
 #endif
     entities[PLAYER_ID].vel = vectorScale(entities[PLAYER_ID].speed, entities[PLAYER_ID].vel);
+    entities[PLAYER_ID].vel.z = g-GRAVITY;
 
     if (vectorLenSquared(entities[PLAYER_ID].dir)) {
         if (entities[PLAYER_ID].cooldown <= 0) {

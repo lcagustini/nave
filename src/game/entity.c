@@ -1,10 +1,13 @@
-void entityCollidesWithMap(int id, bool vertical) {
-    struct vector masked_vel = {!vertical ? entities[id].vel.x : 0, vertical ? entities[id].vel.y : 0, 0};
+void entityCollidesWithMap(int id, int dir) {
+    struct vector masked_vel = {
+        dir == VD_X ? entities[id].vel.x : 0,
+        dir == VD_Y ? entities[id].vel.y : 0,
+        dir == VD_Z ? entities[id].vel.z : 0
+    };
     struct vector next_pos = vectorAdd(entities[id].pos, masked_vel);
+    struct vector total_normal = {0};
 
-    struct vector rotation_points[4] = {{-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}};
-    struct vector rotation_normals[4] = {{-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}, {-200, -200, -200}};
-    struct vector max_z = {0, 0, -200};
+    struct vector up = {0, 0, 1};
 
     for (int i = 0; i < loaded_models[cur_map.model].num_faces; i++) {
         struct face *cur = &loaded_models[cur_map.model].faces[i];
@@ -21,68 +24,44 @@ void entityCollidesWithMap(int id, bool vertical) {
             normal = vectorScale(-1, normal);
         }
 
-        struct vector up = {0, 0, 1};
-
-        float cosine = vectorDot(normal, up);
-
-        float angle = acos(cosine) * 180 / M_PI;
         float scaled_radius = entities[id].hit_radius * entities[id].scale;
 
-        // walls
-        if (angle > 60) {
-            if (vertex0.z > next_pos.z + 0.03 || vertex1.z > next_pos.z + 0.03 || vertex2.z > next_pos.z + 0.03) {
-                if (sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2)) {
-                    memset(&masked_vel, 0, sizeof(masked_vel));
-                }
-            }
-        }
-
-        // floors
-        else {
-            struct vector sky[4] = {
-                {entities[id].pos.x + scaled_radius, entities[id].pos.y, 200},
-                {entities[id].pos.x - scaled_radius, entities[id].pos.y, 200},
-                {entities[id].pos.x, entities[id].pos.y + scaled_radius, 200},
-                {entities[id].pos.x, entities[id].pos.y - scaled_radius, 200}
-            };
-
-            struct vector ground = {0, 0, -1};
-
-            struct vector intersect_v;
-            for (int j = 0; j < 4; j++) {
-                if (rayIntersectsTriangle(sky[j], ground, cur_map.model, cur, &intersect_v)) {
-                    // only false if out of bounds
-                    if (rotation_points[j].z < intersect_v.z) {
-                        rotation_points[j] = intersect_v;
-                        rotation_normals[j] = normal;
+        if (sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2)) {
+            float cosine = vectorDot(normal, up);
+            switch (dir) {
+                case VD_X:
+                    if (cosine < 0.9) {
+                        masked_vel.x = 0;
+                        entities[id].vel.x = 0;
                     }
-                }
-            }
+                    break;
+                case VD_Y:
+                    if (cosine < 0.9) {
+                        masked_vel.y = 0;
+                        entities[id].vel.y = 0;
+                    }
+                    break;
+                case VD_Z:
+                    {
+                        struct vector ground = {0, 0, -1};
+                        struct vector intersect_v;
+                        if (rayIntersectsTriangle(next_pos, ground, cur_map.model, cur, &intersect_v)) {
+                            total_normal = vectorAdd(total_normal, normal);
+                        }
 
-            struct vector sky_center = {entities[id].pos.x, entities[id].pos.y, 200};
-            if (rayIntersectsTriangle(sky_center, ground, cur_map.model, cur, &intersect_v)) {
-                if (max_z.z < intersect_v.z) {
-                    max_z = intersect_v;
-                }
+                        masked_vel.z = 0;
+                        entities[id].vel.z = 0;
+                    }
+                    break;
             }
         }
     }
 
-    struct vector normal_sum = {0};
-    struct vector up = {0,0,1};
-
-    for (int j = 0; j < 4; j++) {
-        normal_sum = vectorAdd(normal_sum, rotation_normals[j]);
-    }
-    vectorNormalize(&normal_sum);
-    entities[id].rotation = getRotationQuat(up, normal_sum);
-
-    if (vectorLen(masked_vel) > entities[id].speed) {
-        vectorNormalize(&masked_vel);
-        masked_vel = vectorScale(entities[id].speed, masked_vel);
+    if (dir == VD_Z) {
+        vectorNormalize(&total_normal);
+        entities[id].rotation = getRotationQuat(up, total_normal);
     }
 
-    masked_vel.z = 0.5*(max_z.z - (entities[id].pos.z - entities[id].scale*entities[id].hit_radius));
     entities[id].pos = vectorAdd(entities[id].pos, masked_vel);
 }
 
@@ -127,8 +106,9 @@ void doEntityFrame(int id) {
             return;
     }
 
-    entityCollidesWithMap(id, true);
-    entityCollidesWithMap(id, false);
+    entityCollidesWithMap(id, VD_X);
+    entityCollidesWithMap(id, VD_Y);
+    entityCollidesWithMap(id, VD_Z);
     if (entities[id].cooldown) entities[id].cooldown--;
 }
 

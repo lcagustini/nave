@@ -15,6 +15,12 @@ struct face {
     int texture_coords[3];
 };
 
+enum vectorDimention {
+    VD_X,
+    VD_Y,
+    VD_Z
+};
+
 struct vector {
     float x, y, z;
 };

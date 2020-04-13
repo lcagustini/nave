@@ -10,3 +10,5 @@
 #define PLAYER_ID 0
 
 #define DEADZONE 25
+
+#define GRAVITY 0.005f
