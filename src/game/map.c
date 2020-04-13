@@ -131,13 +131,13 @@ break_search:
 #endif
 
     struct model final_model;
-    final_model.vertices = malloc(6000 * sizeof(struct vector));
+    final_model.vertices = malloc(10*MAX_OBJ_VERTICES * sizeof(struct vector));
     final_model.num_vertices = 0;
-    final_model.faces = malloc(6000 * sizeof(struct face));
+    final_model.faces = malloc(10*MAX_OBJ_FACES * sizeof(struct face));
     final_model.num_faces = 0;
-    final_model.normals = malloc(6000 * sizeof(struct normal));
+    final_model.normals = malloc(10*MAX_OBJ_VERTICES * sizeof(struct normal));
     final_model.num_normals = 0;
-    final_model.texture_coords = malloc(6000 * sizeof(struct textureCoord));
+    final_model.texture_coords = malloc(10*MAX_OBJ_VERTICES * sizeof(struct textureCoord));
     final_model.num_texture_coords = 0;
     for (int i = 0; i < MAP_SIZE; i++) {
         for (int j = 0; j < MAP_SIZE; j++) {
