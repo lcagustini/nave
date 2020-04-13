@@ -29,14 +29,11 @@ void entityCollidesWithMap(int id, bool vertical) {
         float scaled_radius = entities[id].hit_radius * entities[id].scale;
 
         // walls
-        if (angle > 60 &&
-                (vertex0.z > next_pos.z + 0.03 ||
-                 vertex1.z > next_pos.z + 0.03 ||
-                 vertex2.z > next_pos.z + 0.03)) {
-            bool collides = sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2);
-
-            if (collides) {
-                memset(&masked_vel, 0, sizeof(masked_vel));
+        if (angle > 60) {
+            if (vertex0.z > next_pos.z + 0.03 || vertex1.z > next_pos.z + 0.03 || vertex2.z > next_pos.z + 0.03) {
+                if (sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2)) {
+                    memset(&masked_vel, 0, sizeof(masked_vel));
+                }
             }
         }
 
@@ -53,8 +50,7 @@ void entityCollidesWithMap(int id, bool vertical) {
 
             struct vector intersect_v;
             for (int j = 0; j < 4; j++) {
-                bool intersect = rayIntersectsTriangle(sky[j], ground, cur_map.model, cur, &intersect_v);
-                if (intersect) {
+                if (rayIntersectsTriangle(sky[j], ground, cur_map.model, cur, &intersect_v)) {
                     // only false if out of bounds
                     if (rotation_points[j].z < intersect_v.z) {
                         rotation_points[j] = intersect_v;
@@ -64,8 +60,7 @@ void entityCollidesWithMap(int id, bool vertical) {
             }
 
             struct vector sky_center = {entities[id].pos.x, entities[id].pos.y, 200};
-            bool intersect = rayIntersectsTriangle(sky_center, ground, cur_map.model, cur, &intersect_v);
-            if (intersect) {
+            if (rayIntersectsTriangle(sky_center, ground, cur_map.model, cur, &intersect_v)) {
                 if (max_z.z < intersect_v.z) {
                     max_z = intersect_v;
                 }

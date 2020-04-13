@@ -96,4 +96,6 @@ struct entity {
 
 struct map {
     int model;
+
+    int grid[MAP_SIZE][MAP_SIZE];
 };

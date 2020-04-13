@@ -68,8 +68,10 @@ void generateMap(const char *texture_filename, int texture_size) {
         memset(grid, 0, sizeof(grid));
 
         for (int i = 1; i <= MAP_WORKERS; i++) {
-            int x = 1 + (rand() % (MAP_SIZE-2));
-            int y = 1 + (rand() % (MAP_SIZE-2));
+            int root = (int) fsqrt((float) MAP_WORKERS);
+            int x = 0.8*(((1 + (i-1) % root)*MAP_SIZE/root)-1);
+            int y = 0.8*(((1 + (i-1) / root)*MAP_SIZE/root)-1);
+            printf("worker %d: %d/%d\n", i, x, y);
             for (int j = 0; j < MAP_WORKTIME; j++) {
                 grid[x][y] = 1;
                 x = (x + (rand() % 3) -1);
@@ -138,6 +140,7 @@ break_search:
 
     loaded_models[loaded_models_n++] = final_model;
     cur_map.model = loaded_models_n-1;
+    memcpy(cur_map.grid, grid, sizeof(grid));
 
     removeDuplicateVertices(cur_map.model);
 
