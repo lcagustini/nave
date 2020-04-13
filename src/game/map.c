@@ -3,11 +3,10 @@ void getAvailableMapPosition(float *x, float *y) {
         int gx = 1 + (rand() % (MAP_SIZE-2));
         int gy = 1 + (rand() % (MAP_SIZE-2));
 
-        if (cur_map.grid[gx][gy] == 2) {
+        if (cur_map.grid[gx][gy] == MC_FLOOR) {
             *x = 2*MAP_SCALE*gx;
             *y = 2*MAP_SCALE*gy;
 
-            printf("available: %d %d\n", gx, gy);
             return;
         }
     }
@@ -65,9 +64,14 @@ void mergeMeshes(struct model *in1, struct model in2, struct vector offset) {
 }
 
 void searchGrid(int grid[MAP_SIZE][MAP_SIZE], int x, int y) {
-    if (grid[x][y] == 0 || grid[x][y] == 2) return;
+    switch (grid[x][y]) {
+        case MC_P_FLOOR:
+            grid[x][y] = MC_FLOOR;
+            break;
+        default:
+            return;
+    }
 
-    grid[x][y] = 2;
     if (x < MAP_SIZE-1) searchGrid(grid, x + 1, y);
     if (y < MAP_SIZE-1) searchGrid(grid, x, y + 1);
     if (x > 0) searchGrid(grid, x - 1, y);
@@ -80,15 +84,14 @@ void generateMap(const char *texture_filename, int texture_size) {
     int grid[MAP_SIZE][MAP_SIZE];
 
     while (!done) {
-        memset(grid, 0, sizeof(grid));
+        memset(grid, MC_WALL, sizeof(grid));
 
         for (int i = 1; i <= MAP_WORKERS; i++) {
             int root = (int) fsqrt((float) MAP_WORKERS);
             int x = 0.8*(((1 + (i-1) % root)*MAP_SIZE/root)-1);
             int y = 0.8*(((1 + (i-1) / root)*MAP_SIZE/root)-1);
-            printf("worker %d: %d/%d\n", i, x, y);
             for (int j = 0; j < MAP_WORKTIME; j++) {
-                grid[x][y] = 1;
+                grid[x][y] = MC_P_FLOOR;
                 x = (x + (rand() % 3) -1);
                 y = (y + (rand() % 3) -1);
                 if (x >= MAP_SIZE-1) x = MAP_SIZE-2;
@@ -111,12 +114,21 @@ break_search:
         done = true;
         for (int i = 0; i < MAP_SIZE; i++) {
             for (int j = 0; j < MAP_SIZE; j++) {
-                if (grid[i][j] == 1) {
+                if (grid[i][j] > MC_WALL && grid[i][j] < MC_FLOOR) {
                     done = false;
                 }
             }
         }
     }
+
+#if 0
+    for (int i = 0; i < MAP_SIZE; i++) {
+        for (int j = 0; j < MAP_SIZE; j++) {
+            printf("%d ", grid[i][j]);
+        }
+        printf("\n");
+    }
+#endif
 
     struct model final_model;
     final_model.vertices = malloc(6000 * sizeof(struct vector));
@@ -129,7 +141,7 @@ break_search:
     final_model.num_texture_coords = 0;
     for (int i = 0; i < MAP_SIZE; i++) {
         for (int j = 0; j < MAP_SIZE; j++) {
-            if (grid[i][j] != 2) {
+            if (grid[i][j] == MC_WALL) {
                 struct vector pos = {2*i, 2*j, 0};
                 mergeMeshes(&final_model, loaded_models[2], pos); //Model number from order loaded before calling generateMap
             }
@@ -140,7 +152,6 @@ break_search:
     }
     struct vector floor_offset = {MAP_SIZE, MAP_SIZE, 0};
     mergeMeshes(&final_model, loaded_models[1], floor_offset);
-
 
     final_model.vertices = realloc(final_model.vertices, (final_model.num_vertices+1) * sizeof(struct vector));
     final_model.faces = realloc(final_model.faces, (final_model.num_faces+1) * sizeof(struct face));
@@ -158,6 +169,4 @@ break_search:
     memcpy(cur_map.grid, grid, sizeof(grid));
 
     removeDuplicateVertices(cur_map.model);
-
-    printf("final map mesh: v %d f %d\n", loaded_models[cur_map.model].num_vertices, loaded_models[cur_map.model].num_faces);
 }

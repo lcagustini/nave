@@ -94,6 +94,14 @@ struct entity {
     enum entityType type;
 };
 
+enum mapCell {
+    MC_WALL,
+
+    MC_P_FLOOR,
+
+    MC_FLOOR,
+};
+
 struct map {
     int model;
 
