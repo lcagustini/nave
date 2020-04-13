@@ -1,3 +1,18 @@
+void getAvailableMapPosition(float *x, float *y) {
+    while (true) {
+        int gx = 1 + (rand() % (MAP_SIZE-2));
+        int gy = 1 + (rand() % (MAP_SIZE-2));
+
+        if (cur_map.grid[gx][gy] == 2) {
+            *x = 2*MAP_SCALE*gx;
+            *y = 2*MAP_SCALE*gy;
+
+            printf("available: %d %d\n", gx, gy);
+            return;
+        }
+    }
+}
+
 void removeDuplicateVertices(int model) {
     struct model *cur = &loaded_models[model];
 

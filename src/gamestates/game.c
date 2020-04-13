@@ -58,8 +58,7 @@ void runGame() {
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHTING);
 
-    entities[PLAYER_ID].pos.x = 5;
-    entities[PLAYER_ID].pos.y = 5;
+    getAvailableMapPosition(&entities[PLAYER_ID].pos.x, &entities[PLAYER_ID].pos.y);
     entities[PLAYER_ID].pos.z = 15;
     entities[PLAYER_ID].model = 0;
     entities[PLAYER_ID].health = 10;
@@ -68,8 +67,7 @@ void runGame() {
     entities[PLAYER_ID].hit_radius = 0.9375;
     entities[PLAYER_ID].type = ET_PLAYER;
 
-    entities[1].pos.x = 1;
-    entities[1].pos.y = 5;
+    getAvailableMapPosition(&entities[1].pos.x, &entities[1].pos.y);
     entities[1].pos.z = 15;
     entities[1].model = 0;
     entities[1].health = 3;
@@ -79,8 +77,7 @@ void runGame() {
     entities[1].damage = 1;
     entities[1].type = ET_ENEMY_BASIC;
 
-    entities[2].pos.x = 5;
-    entities[2].pos.y = 1;
+    getAvailableMapPosition(&entities[2].pos.x, &entities[2].pos.y);
     entities[2].pos.z = 15;
     entities[2].model = 0;
     entities[2].health = 3;
