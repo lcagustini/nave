@@ -82,13 +82,12 @@ void entityCollidesWithPlayer(int id) {
 }
 
 void doBasicFrame(int id) {
+    float z = entities[id].vel.z;
     entities[id].vel = vectorSubtract(entities[PLAYER_ID].pos, entities[id].pos);
-    entities[id].vel.z = 0;
-    vectorNormalize(&entities[id].vel);
+    entities[id].vel.z = z;
     entities[id].dir = entities[id].vel;
-    entities[id].vel = vectorScale(entities[id].speed, entities[id].vel);
-
-    entityCollidesWithPlayer(id);
+    entities[id].dir.z = 0;
+    vectorNormalize(&entities[id].dir);
 }
 
 void doPlayerFrame() {
@@ -106,10 +105,15 @@ void doEntityFrame(int id) {
             return;
     }
 
+    vectorNormalize2D(&entities[id].vel);
+    entities[id].vel.x *= entities[id].speed;
+    entities[id].vel.y *= entities[id].speed;
+    entities[id].vel.z -= GRAVITY;
     entityCollidesWithMap(id, VD_X);
     entityCollidesWithMap(id, VD_Y);
     entityCollidesWithMap(id, VD_Z);
     if (entities[id].cooldown) entities[id].cooldown--;
+    if (id != PLAYER_ID) entityCollidesWithPlayer(id);
 }
 
 int checkDeadEntity(int id) {

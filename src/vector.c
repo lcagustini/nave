@@ -1,6 +1,7 @@
 inline static float vectorLen(struct vector v) {
-    float len = v.x * v.x + v.y * v.y + v.z * v.z;
-    return (float) fsqrt(len);
+    float len;
+    vec3f_length(v.x, v.y, v.z, len);
+    return len;
 }
 
 inline static float vectorLenSquared(struct vector v) {
@@ -8,10 +9,15 @@ inline static float vectorLenSquared(struct vector v) {
     return len;
 }
 
+inline static void vectorNormalize2D(struct vector *v) {
+    float len = v->x * v->x + v->y * v->y;
+    float div = frsqrt(len);
+    v->x *= div;
+    v->y *= div;
+}
+
 inline static void vectorNormalize(struct vector *v) {
     float len = v->x * v->x + v->y * v->y + v->z * v->z;
-    if (!len)
-        return;
     float div = frsqrt(len);
     v->x *= div;
     v->y *= div;
@@ -19,7 +25,9 @@ inline static void vectorNormalize(struct vector *v) {
 }
 
 inline static float vectorDot(struct vector a, struct vector b) {
-    return a.x * b.x + a.y * b.y + a.z * b.z;
+    float r;
+    vec3f_dot(a.x, a.y, a.z, b.x, b.y, b.z, r);
+    return r;
 }
 
 inline struct vector vectorCross(struct vector a, struct vector b) {

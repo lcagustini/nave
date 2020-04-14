@@ -8,7 +8,7 @@ bool sphereCollidesTriangle(struct vector sphere_center, float sphere_radius, st
     float d = vectorDot(A, V);
     float e = vectorDot(V, V);
 
-    bool sep1 = d*d > rr*e;
+    bool separated = d*d > rr*e;
 
     float aa = vectorDot(A, A);
     float ab = vectorDot(A, B);
@@ -17,9 +17,9 @@ bool sphereCollidesTriangle(struct vector sphere_center, float sphere_radius, st
     float bc = vectorDot(B, C);
     float cc = vectorDot(C, C);
 
-    bool sep2 = (aa > rr) && (ab > aa) && (ac > aa);
-    bool sep3 = (bb > rr) && (ab > bb) && (bc > bb);
-    bool sep4 = (cc > rr) && (ac > cc) && (bc > cc);
+    separated |= (aa > rr) && (ab > aa) && (ac > aa);
+    separated |= (bb > rr) && (ab > bb) && (bc > bb);
+    separated |= (cc > rr) && (ac > cc) && (bc > cc);
 
     struct vector AB = vectorSubtract(B, A);
     struct vector BC = vectorSubtract(C, B);
@@ -40,11 +40,9 @@ bool sphereCollidesTriangle(struct vector sphere_center, float sphere_radius, st
     struct vector QA = vectorSubtract(vectorScale(e2, A), Q2);
     struct vector QB = vectorSubtract(vectorScale(e3, B), Q3);
 
-    bool sep5 = (vectorDot(Q1, Q1) > rr * e1 * e1) && (vectorDot(Q1, QC) > 0);
-    bool sep6 = (vectorDot(Q2, Q2) > rr * e2 * e2) && (vectorDot(Q2, QA) > 0);
-    bool sep7 = (vectorDot(Q3, Q3) > rr * e3 * e3) && (vectorDot(Q3, QB) > 0);
-
-    bool separated = sep1 || sep2 || sep3 || sep4 || sep5 || sep6 || sep7;
+    separated |= (vectorDot(Q1, Q1) > rr * e1 * e1) && (vectorDot(Q1, QC) > 0);
+    separated |= (vectorDot(Q2, Q2) > rr * e2 * e2) && (vectorDot(Q2, QA) > 0);
+    separated |= (vectorDot(Q3, Q3) > rr * e3 * e3) && (vectorDot(Q3, QB) > 0);
 
     return !separated;
 }
