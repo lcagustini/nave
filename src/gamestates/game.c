@@ -59,8 +59,6 @@ void runGame() {
     glDisable(GL_LIGHTING);
 
     getAvailableMapPosition(&entities[PLAYER_ID].pos.x, &entities[PLAYER_ID].pos.y);
-    entities[PLAYER_ID].pos.x = 0;
-    entities[PLAYER_ID].pos.y = 0;
     entities[PLAYER_ID].pos.z = 15;
     entities[PLAYER_ID].model = 0;
     entities[PLAYER_ID].health = 10;
@@ -89,7 +87,7 @@ void runGame() {
     entities[2].damage = 1;
     entities[2].type = ET_ENEMY_BASIC;
 
-    entities_size = 1;
+    entities_size = 3;
 
     while (cur_gs == GS_GAME) {
         maple_device_t *cont = maple_enum_type(0, MAPLE_FUNC_CONTROLLER);
