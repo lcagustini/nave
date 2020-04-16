@@ -6,8 +6,11 @@ void drawFrame() {
 
     glTranslatef(-entities[PLAYER_ID].pos.x, -entities[PLAYER_ID].pos.y, -14.0f);
 
-    for (int x = 0; x < MAP_SIZE; x++) {
-        for (int y = 0; y < MAP_SIZE; y++) {
+    int gx = 0.5f + (entities[PLAYER_ID].pos.x/(2*MAP_SCALE));
+    int gy = 0.5f + (entities[PLAYER_ID].pos.y/(2*MAP_SCALE));
+
+    for (int x = max(gx-10, 0); x < min(gx+11, MAP_SIZE); x++) {
+        for (int y = max(gy-7, 0); y < min(gy+8, MAP_SIZE); y++) {
             glPushMatrix();
             glScalef(MAP_SCALE, MAP_SCALE, MAP_SCALE);
             glTranslatef(2*x, 2*y, 0);
