@@ -11,6 +11,7 @@ inline static float vectorLenSquared(struct vector v) {
 
 inline static void vectorNormalize2D(struct vector *v) {
     float len = v->x * v->x + v->y * v->y;
+    if (!len) return;
     float div = frsqrt(len);
     v->x *= div;
     v->y *= div;
@@ -18,6 +19,7 @@ inline static void vectorNormalize2D(struct vector *v) {
 
 inline static void vectorNormalize(struct vector *v) {
     float len = v->x * v->x + v->y * v->y + v->z * v->z;
+    if (!len) return;
     float div = frsqrt(len);
     v->x *= div;
     v->y *= div;

@@ -226,11 +226,8 @@ bool sphereCollidesSphere(struct vector sphere1_center, float sphere1_r, struct 
 }
 
 // https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
-bool rayIntersectsTriangle(struct vector rayOrigin, struct vector rayVector, int model, struct face *inTriangle, struct vector *outIntersectionPoint) {
+bool rayIntersectsTriangle(struct vector rayOrigin, struct vector rayVector, struct vector vertex0, struct vector vertex1, struct vector vertex2, struct vector *outIntersectionPoint) {
     const float EPSILON = 0.0000001;
-    struct vector vertex0 = vectorScale(MAP_SCALE, loaded_models[model].vertices[inTriangle->vertices[0]]);
-    struct vector vertex1 = vectorScale(MAP_SCALE, loaded_models[model].vertices[inTriangle->vertices[1]]);
-    struct vector vertex2 = vectorScale(MAP_SCALE, loaded_models[model].vertices[inTriangle->vertices[2]]);
     struct vector edge1, edge2, h, s, q;
     float a,f,u,v;
     edge1 = vectorSubtract(vertex1, vertex0);

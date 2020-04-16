@@ -45,20 +45,29 @@ bool projectileCollidesWithEntity(struct projectile *cur) {
 bool projectileCollidesWithMap(struct projectile *proj) {
     struct vector next_pos = vectorAdd(proj->pos, vectorScale(proj->speed, proj->vel));
 
-    for (int i = 0; i < loaded_models[cur_map.model].num_faces; i++) {
-        struct face *cur = &loaded_models[cur_map.model].faces[i];
+    int gx = proj->pos.x/(2*MAP_SCALE);
+    int gy = proj->pos.y/(2*MAP_SCALE);
 
-        struct vector vertex0 = vectorScale(MAP_SCALE, loaded_models[cur_map.model].vertices[cur->vertices[0]]);
-        struct vector vertex1 = vectorScale(MAP_SCALE, loaded_models[cur_map.model].vertices[cur->vertices[1]]);
-        struct vector vertex2 = vectorScale(MAP_SCALE, loaded_models[cur_map.model].vertices[cur->vertices[2]]);
+    for (int x = gx-2; x < gx+2; x++) {
+        for (int y = gy-2; y < gy+2; y++) {
+            struct model *model = &loaded_models[cur_map.models[cur_map.grid[x][y]]];
+            struct vector cell_pos = {2*x, 2*y, 0};
+            for (int i = 0; i < model->num_faces; i++) {
+                struct face *cur = &model->faces[i];
 
-        float scaled_radius = proj->hit_radius * proj->scale;
+                struct vector vertex0 = vectorScale(MAP_SCALE, vectorAdd(model->vertices[cur->vertices[0]], cell_pos));
+                struct vector vertex1 = vectorScale(MAP_SCALE, vectorAdd(model->vertices[cur->vertices[1]], cell_pos));
+                struct vector vertex2 = vectorScale(MAP_SCALE, vectorAdd(model->vertices[cur->vertices[2]], cell_pos));
 
-        bool collides = sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2);
+                float scaled_radius = proj->hit_radius * proj->scale;
 
-        if (collides) {
-            deleteProjectile(proj);
-            return true;
+                bool collides = sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2);
+
+                if (collides) {
+                    deleteProjectile(proj);
+                    return true;
+                }
+            }
         }
     }
     return false;

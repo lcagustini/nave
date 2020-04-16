@@ -106,10 +106,11 @@ enum mapCell {
     MC_P_FLOOR,
 
     MC_FLOOR,
+
+    MC_MAX
 };
 
 struct map {
-    int model;
-
+    int models[MC_MAX];
     int grid[MAP_SIZE][MAP_SIZE];
 };

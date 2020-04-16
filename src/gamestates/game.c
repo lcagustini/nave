@@ -6,10 +6,15 @@ void drawFrame() {
 
     glTranslatef(-entities[PLAYER_ID].pos.x, -entities[PLAYER_ID].pos.y, -14.0f);
 
-    glPushMatrix();
-    glScalef(MAP_SCALE, MAP_SCALE, MAP_SCALE);
-    drawModel(cur_map.model);
-    glPopMatrix();
+    for (int x = 0; x < MAP_SIZE; x++) {
+        for (int y = 0; y < MAP_SIZE; y++) {
+            glPushMatrix();
+            glScalef(MAP_SCALE, MAP_SCALE, MAP_SCALE);
+            glTranslatef(2*x, 2*y, 0);
+            drawModel(cur_map.models[cur_map.grid[x][y]]);
+            glPopMatrix();
+        }
+    }
 
     for (struct projectile *cur = projectiles; cur; cur = cur->next) {
         glPushMatrix();
@@ -40,10 +45,14 @@ void runGame() {
     assert(loaded_models_n == 0);
 
     loaded_models[loaded_models_n++] = loadWavefrontModel("/game/player.obj", "/game/player.vq", VERTEX_ALL, 256);
-    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/floor.obj", "", VERTEX_TEXTURE, 0);
-    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/wall.obj", "", VERTEX_TEXTURE, 0);
 
-    generateMap("/game/map.vq", 1024);
+    cur_map.models[MC_FLOOR] = loaded_models_n;
+    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/floor.obj", "/game/floor.vq", VERTEX_ALL, 256);
+
+    cur_map.models[MC_WALL] = loaded_models_n;
+    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/wall.obj", "/game/wall.vq", VERTEX_ALL, 256);
+
+    generateMap();
 
     umountRomdisk("/game");
 

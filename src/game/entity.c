@@ -9,50 +9,59 @@ void entityCollidesWithMap(int id, int dir) {
 
     struct vector up = {0, 0, 1};
 
-    for (int i = 0; i < loaded_models[cur_map.model].num_faces; i++) {
-        struct face *cur = &loaded_models[cur_map.model].faces[i];
+    int gx = entities[id].pos.x/(2*MAP_SCALE);
+    int gy = entities[id].pos.y/(2*MAP_SCALE);
 
-        struct vector vertex0 = vectorScale(MAP_SCALE, loaded_models[cur_map.model].vertices[cur->vertices[0]]);
-        struct vector vertex1 = vectorScale(MAP_SCALE, loaded_models[cur_map.model].vertices[cur->vertices[1]]);
-        struct vector vertex2 = vectorScale(MAP_SCALE, loaded_models[cur_map.model].vertices[cur->vertices[2]]);
+    for (int x = gx-2; x < gx+2; x++) {
+        for (int y = gy-2; y < gy+2; y++) {
+            struct model *model = &loaded_models[cur_map.models[cur_map.grid[x][y]]];
+            struct vector cell_pos = {2*x, 2*y, 0};
+            for (int i = 0; i < model->num_faces; i++) {
+                struct face *cur = &model->faces[i];
 
-        struct vector v1 = vectorSubtract(vertex2, vertex0);
-        struct vector v2 = vectorSubtract(vertex1, vertex0);
-        struct vector normal = vectorCross(v1, v2);
-        vectorNormalize(&normal);
-        if (normal.z < 0) {
-            normal = vectorScale(-1, normal);
-        }
+                struct vector vertex0 = vectorScale(MAP_SCALE, vectorAdd(model->vertices[cur->vertices[0]], cell_pos));
+                struct vector vertex1 = vectorScale(MAP_SCALE, vectorAdd(model->vertices[cur->vertices[1]], cell_pos));
+                struct vector vertex2 = vectorScale(MAP_SCALE, vectorAdd(model->vertices[cur->vertices[2]], cell_pos));
 
-        float scaled_radius = entities[id].hit_radius * entities[id].scale;
+                struct vector v1 = vectorSubtract(vertex2, vertex0);
+                struct vector v2 = vectorSubtract(vertex1, vertex0);
+                struct vector normal = vectorCross(v1, v2);
+                vectorNormalize(&normal);
+                if (normal.z < 0) {
+                    normal = vectorScale(-1, normal);
+                }
 
-        if (sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2)) {
-            float cosine = vectorDot(normal, up);
-            switch (dir) {
-                case VD_X:
-                    if (cosine < 0.9) {
-                        masked_vel.x = 0;
-                        entities[id].vel.x = 0;
+                float scaled_radius = entities[id].hit_radius * entities[id].scale;
+
+                if (sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2)) {
+                    float cosine = vectorDot(normal, up);
+                    switch (dir) {
+                        case VD_X:
+                            if (cosine < 0.9) {
+                                masked_vel.x = 0;
+                                entities[id].vel.x = 0;
+                            }
+                            break;
+                        case VD_Y:
+                            if (cosine < 0.9) {
+                                masked_vel.y = 0;
+                                entities[id].vel.y = 0;
+                            }
+                            break;
+                        case VD_Z:
+                            {
+                                struct vector ground = {0, 0, -1};
+                                struct vector intersect_v;
+                                if (rayIntersectsTriangle(next_pos, ground, vertex0, vertex1, vertex2, &intersect_v)) {
+                                    total_normal = vectorAdd(total_normal, normal);
+                                }
+
+                                masked_vel.z = 0;
+                                entities[id].vel.z = 0;
+                            }
+                            break;
                     }
-                    break;
-                case VD_Y:
-                    if (cosine < 0.9) {
-                        masked_vel.y = 0;
-                        entities[id].vel.y = 0;
-                    }
-                    break;
-                case VD_Z:
-                    {
-                        struct vector ground = {0, 0, -1};
-                        struct vector intersect_v;
-                        if (rayIntersectsTriangle(next_pos, ground, cur_map.model, cur, &intersect_v)) {
-                            total_normal = vectorAdd(total_normal, normal);
-                        }
-
-                        masked_vel.z = 0;
-                        entities[id].vel.z = 0;
-                    }
-                    break;
+                }
             }
         }
     }
