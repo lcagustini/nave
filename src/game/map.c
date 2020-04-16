@@ -1,11 +1,12 @@
-void getAvailableMapPosition(float *x, float *y) {
+void getAvailableMapPosition(struct vector *pos) {
     while (true) {
         int gx = 1 + (rand() % (MAP_SIZE-2));
         int gy = 1 + (rand() % (MAP_SIZE-2));
 
         if (cur_map.grid[gx][gy] == MC_FLOOR) {
-            *x = 2*MAP_SCALE*gx;
-            *y = 2*MAP_SCALE*gy;
+            pos->x = 2*MAP_SCALE*gx;
+            pos->y = 2*MAP_SCALE*gy;
+            pos->z = 3.0f;
 
             return;
         }

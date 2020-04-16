@@ -4,7 +4,7 @@ void drawFrame() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glTranslatef(-entities[PLAYER_ID].pos.x, -entities[PLAYER_ID].pos.y, -14.0f);
+    glTranslatef(-entities[PLAYER_ID].pos.x, -entities[PLAYER_ID].pos.y, -13.5f);
 
     int gx = 0.5f + (entities[PLAYER_ID].pos.x/(2*MAP_SCALE));
     int gy = 0.5f + (entities[PLAYER_ID].pos.y/(2*MAP_SCALE));
@@ -70,8 +70,7 @@ void runGame() {
     glEnable(GL_LIGHT0);
     glDisable(GL_LIGHTING);
 
-    getAvailableMapPosition(&entities[PLAYER_ID].pos.x, &entities[PLAYER_ID].pos.y);
-    entities[PLAYER_ID].pos.z = 15;
+    getAvailableMapPosition(&entities[PLAYER_ID].pos);
     entities[PLAYER_ID].model = 0;
     entities[PLAYER_ID].health = 10;
     entities[PLAYER_ID].scale = 0.24;
@@ -79,8 +78,7 @@ void runGame() {
     entities[PLAYER_ID].hit_radius = 0.9375;
     entities[PLAYER_ID].type = ET_PLAYER;
 
-    getAvailableMapPosition(&entities[1].pos.x, &entities[1].pos.y);
-    entities[1].pos.z = 15;
+    getAvailableMapPosition(&entities[1].pos);
     entities[1].model = 0;
     entities[1].health = 3;
     entities[1].scale = 0.24;
@@ -89,8 +87,7 @@ void runGame() {
     entities[1].damage = 1;
     entities[1].type = ET_ENEMY_BASIC;
 
-    getAvailableMapPosition(&entities[2].pos.x, &entities[2].pos.y);
-    entities[2].pos.z = 15;
+    getAvailableMapPosition(&entities[2].pos);
     entities[2].model = 0;
     entities[2].health = 3;
     entities[2].scale = 0.24;

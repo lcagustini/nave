@@ -45,11 +45,11 @@ bool projectileCollidesWithEntity(struct projectile *cur) {
 bool projectileCollidesWithMap(struct projectile *proj) {
     struct vector next_pos = vectorAdd(proj->pos, vectorScale(proj->speed, proj->vel));
 
-    int gx = proj->pos.x/(2*MAP_SCALE);
-    int gy = proj->pos.y/(2*MAP_SCALE);
+    int gx = 0.5f + (proj->pos.x/(2*MAP_SCALE));
+    int gy = 0.5f + (proj->pos.y/(2*MAP_SCALE));
 
-    for (int x = gx-2; x < gx+2; x++) {
-        for (int y = gy-2; y < gy+2; y++) {
+    for (int x = max(gx-1, 0); x < min(gx+2, MAP_SIZE); x++) {
+        for (int y = max(gy-1, 0); y < min(gy+2, MAP_SIZE); y++) {
             struct model *model = &loaded_models[cur_map.models[cur_map.grid[x][y]]];
             struct vector cell_pos = {2*x, 2*y, 0};
             for (int i = 0; i < model->num_faces; i++) {
