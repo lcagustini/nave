@@ -59,29 +59,11 @@ void drawModel(int model) {
     glBindTexture(GL_TEXTURE_2D, loaded_models[model].texture_id);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    for (int i = 0; i < loaded_models[model].num_faces; i++) {
-        struct face f = loaded_models[model].faces[i];
+    glTexCoordPointer(2, GL_FLOAT, 0, loaded_models[model].draw_texture_coords);
+    glNormalPointer(GL_FLOAT, 0, loaded_models[model].draw_normals);
+    glVertexPointer(3, GL_FLOAT, 0, loaded_models[model].draw_vertices);
 
-        glBegin(GL_TRIANGLES);
-
-        for (int j = 0; j <= 2; j++) {
-            if (loaded_models[model].num_normals) {
-                struct normal n = loaded_models[model].normals[f.normals[j]];
-                glNormal3f(n.x, n.y, n.z);
-            }
-
-            if (loaded_models[model].num_texture_coords) {
-                struct textureCoord t = loaded_models[model].texture_coords[f.texture_coords[j]];
-                glTexCoord2f(t.x, t.y);
-            }
-
-            struct vector v = loaded_models[model].vertices[f.vertices[j]];
-
-            glVertex3f(v.x, v.y, v.z);
-        }
-
-        glEnd();
-    }
+    glDrawArrays(GL_TRIANGLES, 0, loaded_models[model].num_draw_vertices);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 }

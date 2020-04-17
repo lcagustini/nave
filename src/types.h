@@ -38,12 +38,15 @@ struct model {
     int num_vertices;
     struct face *faces;
     int num_faces;
-    struct normal *normals;
-    int num_normals;
-    struct textureCoord *texture_coords;
-    int num_texture_coords;
+
     GLuint texture_id;
     enum faceType face_type;
+    float *draw_vertices;
+    int num_draw_vertices;
+    float *draw_normals;
+    int num_draw_normals;
+    float *draw_texture_coords;
+    int num_draw_texture_coords;
 };
 
 struct quaternion {

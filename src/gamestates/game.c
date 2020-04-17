@@ -1,8 +1,11 @@
 void drawFrame() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_LIGHTING_BIT);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHTING);
 
     glTranslatef(-entities[PLAYER_ID].pos.x, -entities[PLAYER_ID].pos.y, -13.5f);
 
@@ -50,25 +53,14 @@ void runGame() {
     loaded_models[loaded_models_n++] = loadWavefrontModel("/game/player.obj", "/game/player.vq", VERTEX_ALL, 256);
 
     cur_map.models[MC_FLOOR] = loaded_models_n;
-    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/floor.obj", "/game/floor.vq", VERTEX_ALL, 256);
+    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/floor.obj", "/game/floor.vq", VERTEX_ALL, 128);
 
     cur_map.models[MC_WALL] = loaded_models_n;
-    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/wall.obj", "/game/wall.vq", VERTEX_ALL, 256);
+    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/wall.obj", "/game/wall.vq", VERTEX_ALL, 128);
 
     generateMap();
 
     umountRomdisk("/game");
-
-    GLfloat light_position[] = { 3.4, 1.0, 3.6, 0.0 };
-    GLfloat light_ambient[] = { 0.2, 0.2, 0.2, 1 };
-    GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1 };
-    GLfloat light_specular[] = { 0.6, 0.6, 0.6, 1 };
-    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-    glEnable(GL_LIGHT0);
-    glDisable(GL_LIGHTING);
 
     getAvailableMapPosition(&entities[PLAYER_ID].pos);
     entities[PLAYER_ID].model = 0;
@@ -116,6 +108,9 @@ void runGame() {
 
         glutSwapBuffers();
     }
+
+    glDisable(GL_LIGHTING);
+    glDisable(GL_LIGHT0);
 
     while (projectiles) {
         deleteProjectile(projectiles);
