@@ -3,8 +3,8 @@ void runTitle() {
 
     assert(loaded_models_n == 0);
 
-    loaded_models[loaded_models_n++] = loadWavefrontModel("/title/map.obj", "/title/map.vq", VERTEX_ALL, 512);
-    loaded_models[loaded_models_n++] = loadWavefrontModel("/title/title.obj", "/title/title.vq", VERTEX_ALL_ALPHA, 256);
+    loadModel("/title/map.obj", "/title/map.vq", VERTEX_ALL, 512);
+    loadModel("/title/title.obj", "/title/title.vq", VERTEX_ALL_ALPHA, 256);
 
     umountRomdisk("/title");
 

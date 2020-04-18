@@ -50,13 +50,13 @@ void runGame() {
     mountRomdisk("/cd/level1_romdisk.img", "/game");
     assert(loaded_models_n == 0);
 
-    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/player.obj", "/game/player.vq", VERTEX_ALL, 256);
+    loadModel("/game/player.obj", "/game/player.vq", VERTEX_ALL, 256);
 
     cur_map.models[MC_FLOOR] = loaded_models_n;
-    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/floor.obj", "/game/floor.vq", VERTEX_ALL, 128);
+    loadModel("/game/floor.obj", "/game/floor.vq", VERTEX_ALL, 128);
 
     cur_map.models[MC_WALL] = loaded_models_n;
-    loaded_models[loaded_models_n++] = loadWavefrontModel("/game/wall.obj", "/game/wall.vq", VERTEX_ALL, 128);
+    loadModel("/game/wall.obj", "/game/wall.vq", VERTEX_ALL, 128);
 
     generateMap();
 

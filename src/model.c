@@ -1,116 +1,112 @@
 void destroyModel(int model) {
     free(loaded_models[model].vertices);
-    free(loaded_models[model].faces);
-
-    free(loaded_models[model].draw_vertices);
-    free(loaded_models[model].draw_normals);
-    free(loaded_models[model].draw_texture_coords);
+    free(loaded_models[model].normals);
+    free(loaded_models[model].texture_coords);
 
     if (loaded_models[model].face_type == VERTEX_ALL || loaded_models[model].face_type == VERTEX_ALL_ALPHA) {
         glDeleteTextures(1, &loaded_models[model].texture_id);
     }
 }
 
-struct model loadWavefrontModel(const char *obj_filename, const char *texture_filename, enum faceType face_type, int texture_size) {
-    struct model model = {};
+void loadModel(const char *obj_filename, const char *texture_filename, enum faceType face_type, int texture_size) {
+    struct {
+        struct vector *vertices;
+        int num_vertices;
+        struct face *faces;
+        int num_faces;
+        struct normal *normals;
+        int num_normals;
+        struct textureCoord *texture_coords;
+        int num_texture_coords;
+    } file = {0};
 
-    // NOTE: Objects bigger than the constants are undefined behavior
-    model.vertices = malloc(MAX_OBJ_VERTICES * sizeof(struct vector));
-    model.faces = malloc(MAX_OBJ_FACES * sizeof(struct face));
-    model.face_type = face_type;
-
-    struct normal *normals = malloc(MAX_OBJ_VERTICES * sizeof(struct normal));
-    int num_normals = 0;
-    struct textureCoord *texture_coords = malloc(MAX_OBJ_VERTICES * sizeof(struct textureCoord));
-    int num_texture_coords = 0;
-
-    if (face_type == VERTEX_ALL || face_type == VERTEX_ALL_ALPHA) {
-        model.texture_id = loadTexture(texture_filename, face_type, texture_size);
-    }
+    file.vertices = malloc(MAX_OBJ_SIZE * sizeof(struct vector));
+    file.faces = malloc(MAX_OBJ_SIZE * sizeof(struct face));
+    file.normals = malloc(MAX_OBJ_SIZE * sizeof(struct normal));
+    file.texture_coords = malloc(MAX_OBJ_SIZE * sizeof(struct textureCoord));
 
     FILE *f = fopen(obj_filename, "r");
-    char type[40] = {};
-    while ((fscanf(f, " %s", type)) != EOF) {
-        if (!strcmp(type, "v")) {
+    char buffer[40] = {0};
+    while ((fscanf(f, " %s", buffer)) != EOF) {
+        if (!strcmp(buffer, "v")) {
             struct vector v = {};
-
             fscanf(f, " %f %f %f", &v.x, &v.y, &v.z);
-            model.vertices[++model.num_vertices] = v;
-        } else if (!strcmp(type, "vn")) {
+            file.vertices[++file.num_vertices] = v;
+        }
+        else if (!strcmp(buffer, "vn")) {
             struct normal n = {};
-
             fscanf(f, " %f %f %f", &n.x, &n.y, &n.z);
-            normals[++num_normals] = n;
-        } else if (!strcmp(type, "vt")) {
+            file.normals[++file.num_normals] = n;
+        }
+        else if (!strcmp(buffer, "vt")) {
             struct textureCoord t = {};
-
             fscanf(f, " %f %f", &t.x, &t.y);
             t.y = 1 - t.y;
-            texture_coords[++num_texture_coords] = t;
-        } else if (!strcmp(type, "f")) {
+            file.texture_coords[++file.num_texture_coords] = t;
+        }
+        else if (!strcmp(buffer, "f")) {
             struct face face = {};
-
-            if (face_type == VERTEX_ONLY) {
-                fscanf(f, " %d %d %d", &face.vertices[0], &face.vertices[1], &face.vertices[2]);
-            } else if (face_type == VERTEX_NORMAL) {
-                fscanf(f, " %d//%d %d//%d %d//%d", &face.vertices[0], &face.normals[0], &face.vertices[1],
-                        &face.normals[1], &face.vertices[2], &face.normals[2]);
-            } else if (face_type == VERTEX_ALL || face_type == VERTEX_ALL_ALPHA || face_type == VERTEX_TEXTURE) {
-                fscanf(f, " %d/%d/%d %d/%d/%d %d/%d/%d", &face.vertices[0], &face.texture_coords[0],
-                        &face.normals[0], &face.vertices[1],
-                        &face.texture_coords[1], &face.normals[1],
-                        &face.vertices[2], &face.texture_coords[2],
-                        &face.normals[2]);
-            } else {
-                assert(false);
+            switch (face_type) {
+                case VERTEX_ONLY:
+                    fscanf(f, " %d %d %d",
+                            &face.vertices[0], &face.vertices[1], &face.vertices[2]
+                          );
+                    break;
+                case VERTEX_NORMAL:
+                    fscanf(f, " %d//%d %d//%d %d//%d",
+                            &face.vertices[0], &face.normals[0], &face.vertices[1],
+                            &face.normals[1], &face.vertices[2], &face.normals[2]
+                          );
+                    break;
+                case VERTEX_ALL:
+                case VERTEX_ALL_ALPHA:
+                case VERTEX_TEXTURE:
+                    fscanf(f, " %d/%d/%d %d/%d/%d %d/%d/%d",
+                            &face.vertices[0], &face.texture_coords[0], &face.normals[0],
+                            &face.vertices[1], &face.texture_coords[1], &face.normals[1],
+                            &face.vertices[2], &face.texture_coords[2], &face.normals[2]
+                          );
+                    break;
+                default:
+                    assert(false);
             }
 
-            model.faces[model.num_faces++] = face;
+            file.faces[file.num_faces++] = face;
         }
     }
     fclose(f);
 
-    model.vertices = realloc(model.vertices, (model.num_vertices+1) * sizeof(struct vector));
-    model.faces = realloc(model.faces, (model.num_faces+1) * sizeof(struct face));
+    struct model *model = &loaded_models[loaded_models_n];
 
-    model.draw_vertices = malloc(MAX_OBJ_VERTICES * 3 * sizeof(float));
-    model.draw_normals = malloc(MAX_OBJ_VERTICES * 3 * sizeof(float));
-    model.draw_texture_coords = malloc(MAX_OBJ_VERTICES * 3 * sizeof(float));
+    if (face_type == VERTEX_ALL || face_type == VERTEX_ALL_ALPHA) {
+        model->texture_id = loadTexture(texture_filename, face_type, texture_size);
+    }
+    model->face_type = face_type;
+    model->num_faces = file.num_faces;
+    model->vertices = malloc(model->num_faces*3*sizeof(struct vector));
+    model->normals = malloc(model->num_faces*3*sizeof(struct normal));
+    model->texture_coords = malloc(model->num_faces*3*sizeof(struct textureCoord));
 
     int k = 0;
-    for (int i = 0; i < model.num_faces; i++) {
-        for (int j = 0; j < 3; j++) {
-            model.draw_vertices[k++] = model.vertices[model.faces[i].vertices[j]].x;
-            model.draw_vertices[k++] = model.vertices[model.faces[i].vertices[j]].y;
-            model.draw_vertices[k++] = model.vertices[model.faces[i].vertices[j]].z;
-        }
+    for (int i = 0; i < file.num_faces; i++) {
+        model->vertices[k] = file.vertices[file.faces[i].vertices[0]];
+        model->vertices[k+1] = file.vertices[file.faces[i].vertices[1]];
+        model->vertices[k+2] = file.vertices[file.faces[i].vertices[2]];
+
+        model->normals[k] = file.normals[file.faces[i].normals[0]];
+        model->normals[k+1] = file.normals[file.faces[i].normals[1]];
+        model->normals[k+2] = file.normals[file.faces[i].normals[2]];
+
+        model->texture_coords[k] = file.texture_coords[file.faces[i].texture_coords[0]];
+        model->texture_coords[k+1] = file.texture_coords[file.faces[i].texture_coords[1]];
+        model->texture_coords[k+2] = file.texture_coords[file.faces[i].texture_coords[2]];
+
+        k += 3;
     }
-    model.num_draw_vertices = k/3;
-    model.draw_vertices = realloc(model.draw_vertices, k*sizeof(float));
+    loaded_models_n++;
 
-    k = 0;
-    for (int i = 0; i < model.num_faces; i++) {
-        for (int j = 0; j < 3; j++) {
-            model.draw_normals[k++] = normals[model.faces[i].normals[j]].x;
-            model.draw_normals[k++] = normals[model.faces[i].normals[j]].y;
-            model.draw_normals[k++] = normals[model.faces[i].normals[j]].z;
-        }
-    }
-    model.num_draw_normals = k/3;
-    model.draw_normals = realloc(model.draw_normals, k*sizeof(float));
-
-    k = 0;
-    for (int i = 0; i < model.num_faces; i++) {
-        for (int j = 0; j < 3; j++) {
-            model.draw_texture_coords[k++] = texture_coords[model.faces[i].texture_coords[j]].x;
-            model.draw_texture_coords[k++] = texture_coords[model.faces[i].texture_coords[j]].y;
-        }
-    }
-    model.num_draw_texture_coords = k/2;
-    model.draw_texture_coords = realloc(model.draw_texture_coords, k*sizeof(float));
-
-    free(normals);
-    free(texture_coords);
-
-    return model;
+    free(file.vertices);
+    free(file.faces);
+    free(file.normals);
+    free(file.texture_coords);
 }

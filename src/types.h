@@ -34,19 +34,13 @@ enum faceType {
 };
 
 struct model {
-    struct vector *vertices;
-    int num_vertices;
-    struct face *faces;
-    int num_faces;
-
     GLuint texture_id;
     enum faceType face_type;
-    float *draw_vertices;
-    int num_draw_vertices;
-    float *draw_normals;
-    int num_draw_normals;
-    float *draw_texture_coords;
-    int num_draw_texture_coords;
+
+    struct vector *vertices;
+    struct normal *normals;
+    struct textureCoord *texture_coords;
+    int num_faces;
 };
 
 struct quaternion {

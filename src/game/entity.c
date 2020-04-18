@@ -17,11 +17,9 @@ void entityCollidesWithMap(int id, int dir) {
             struct model *model = &loaded_models[cur_map.models[cur_map.grid[x][y]]];
             struct vector cell_pos = {2*x, 2*y, 0};
             for (int i = 0; i < model->num_faces; i++) {
-                struct face *cur = &model->faces[i];
-
-                struct vector vertex0 = vectorScale(MAP_SCALE, vectorAdd(model->vertices[cur->vertices[0]], cell_pos));
-                struct vector vertex1 = vectorScale(MAP_SCALE, vectorAdd(model->vertices[cur->vertices[1]], cell_pos));
-                struct vector vertex2 = vectorScale(MAP_SCALE, vectorAdd(model->vertices[cur->vertices[2]], cell_pos));
+                struct vector vertex0 = vectorScale(MAP_SCALE, vectorAdd(model->vertices[3*i], cell_pos));
+                struct vector vertex1 = vectorScale(MAP_SCALE, vectorAdd(model->vertices[3*i+1], cell_pos));
+                struct vector vertex2 = vectorScale(MAP_SCALE, vectorAdd(model->vertices[3*i+2], cell_pos));
 
                 struct vector v1 = vectorSubtract(vertex2, vertex0);
                 struct vector v2 = vectorSubtract(vertex1, vertex0);
