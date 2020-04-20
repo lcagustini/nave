@@ -1,11 +1,8 @@
 void drawFrame() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_LIGHTING_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHTING);
 
     glTranslatef(-entities[PLAYER_ID].pos.x, -entities[PLAYER_ID].pos.y, -13.5f);
 
