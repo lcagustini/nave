@@ -29,7 +29,7 @@ void entityCollidesWithMap(int id, int dir) {
                     normal = vectorScale(-1, normal);
                 }
 
-                float scaled_radius = entities[id].hit_radius * entities[id].scale;
+                float scaled_radius = HIT_RADIUS * entities[id].scale;
 
                 if (sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2)) {
                     float cosine = vectorDot(normal, up);
@@ -75,7 +75,7 @@ void entityCollidesWithMap(int id, int dir) {
 void entityCollidesWithPlayer(int id) {
     struct vector next_pos = vectorAdd(entities[id].pos, entities[id].vel);
 
-    bool collides = sphereCollidesSphere(entities[PLAYER_ID].pos, entities[PLAYER_ID].hit_radius * entities[PLAYER_ID].scale, next_pos, entities[id].hit_radius * entities[id].scale);
+    bool collides = sphereCollidesSphere(entities[PLAYER_ID].pos, HIT_RADIUS * entities[PLAYER_ID].scale, next_pos, HIT_RADIUS * entities[id].scale);
 
     if (collides) {
         struct vector v = vectorSubtract(entities[id].pos, entities[PLAYER_ID].pos);
@@ -137,4 +137,66 @@ int checkDeadEntity(int id) {
         }
     }
     return id;
+}
+
+int loadEntitiesFromFile(const char *filename) {
+    FILE *f = fopen(filename, "r");
+
+    int count;
+    fscanf(f, " %d", &count);
+
+    int loaded = 0;
+    for (int i = 0; i < count; i++) {
+        struct entity *ent = &entities[entities_size];
+        memset(ent, 0, sizeof(struct entity));
+
+        char buffer[40];
+        while ((fscanf(f, " %s", buffer)) != EOF) {
+            if (!strcmp(buffer, "type")) {
+                fscanf(f, " %u", &ent->type);
+            }
+            else if (!strcmp(buffer, "health")) {
+                fscanf(f, " %d", &ent->max_health);
+                ent->health = ent->max_health;
+            }
+            else if (!strcmp(buffer, "damage")) {
+                fscanf(f, " %d", &ent->damage);
+            }
+            else if (!strcmp(buffer, "shot_rate")) {
+                fscanf(f, " %d", &ent->shot_rate);
+            }
+            else if (!strcmp(buffer, "range")) {
+                fscanf(f, " %f", &ent->range);
+            }
+            else if (!strcmp(buffer, "shot_speed")) {
+                fscanf(f, " %f", &ent->shot_speed);
+            }
+            else if (!strcmp(buffer, "speed")) {
+                fscanf(f, " %f", &ent->speed);
+            }
+            else if (!strcmp(buffer, "knockback")) {
+                fscanf(f, " %f", &ent->knockback);
+            }
+            else if (!strcmp(buffer, "scale")) {
+                fscanf(f, " %f", &ent->scale);
+            }
+            else if (!strcmp(buffer, "shot_scale")) {
+                fscanf(f, " %f", &ent->shot_scale);
+            }
+            else if (!strcmp(buffer, "next")) {
+                break;
+            }
+            else {
+                assert(false);
+            }
+        }
+        getAvailableMapPosition(&ent->pos);
+        ent->model = entities_models[ent->type];
+
+        loaded++;
+        entities_size++;
+    }
+
+    fclose(f);
+    return loaded;
 }

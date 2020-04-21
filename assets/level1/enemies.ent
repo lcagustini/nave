@@ -1,0 +1,24 @@
+2
+type 1
+health 3
+damage 1
+shot_rate 10
+range 10
+shot_speed 0.09
+speed 0.02
+knockback 0
+scale 0.24
+shot_scale 0
+next
+
+type 1
+health 3
+damage 1
+shot_rate 10
+range 10
+shot_speed 0.09
+speed 0.02
+knockback 0
+scale 0.24
+shot_scale 0
+next

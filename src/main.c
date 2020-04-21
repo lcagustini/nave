@@ -8,16 +8,18 @@
 
 #include <assert.h>
 #include <math.h>
+#include <threads.h>
 #include <stdbool.h>
 
 #include "config.h"
 #include "types.h"
 #include "globals.h"
 
-#include "vector.c"
-#include "memory.c"
-#include "gfx.c"
-#include "model.c"
+#include "common/vector.c"
+#include "common/memory.c"
+#include "common/gfx.c"
+#include "common/model.c"
+#include "common/loading.c"
 
 #include "game/map.c"
 #include "game/physics.c"

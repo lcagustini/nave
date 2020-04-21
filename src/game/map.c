@@ -33,6 +33,7 @@ void generateMap() {
 
     while (!done) {
         memset(cur_map.grid, MC_WALL, sizeof(cur_map.grid));
+        loading_progress = 0;
 
         for (int i = 1; i <= MAP_WORKERS; i++) {
             int root = (int) fsqrt((float) MAP_WORKERS);
@@ -48,6 +49,7 @@ void generateMap() {
                 if (y <= 0) y = 1;
             }
         }
+        loading_progress = 50;
 
         for (int i = 0; i < MAP_SIZE; i++) {
             for (int j = 0; j < MAP_SIZE; j++) {
@@ -58,6 +60,7 @@ void generateMap() {
             }
         }
 break_search:
+        loading_progress = 75;
 
         done = true;
         for (int i = 0; i < MAP_SIZE; i++) {
@@ -68,6 +71,7 @@ break_search:
             }
         }
     }
+    loading_progress = 100;
 
 #if 0
     for (int i = 0; i < MAP_SIZE; i++) {

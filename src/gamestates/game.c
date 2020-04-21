@@ -44,9 +44,13 @@ void drawFrame() {
 }
 
 void runGame() {
+    startLoading();
+
     mountRomdisk("/cd/level1_romdisk.img", "/game");
     assert(loaded_models_n == 0);
 
+    entities_models[ET_PLAYER] = loaded_models_n;
+    entities_models[ET_ENEMY_BASIC] = loaded_models_n;
     loadModel("/game/player.obj", "/game/player.vq", VERTEX_ALL, 256);
 
     cur_map.models[MC_FLOOR] = loaded_models_n;
@@ -57,35 +61,21 @@ void runGame() {
 
     generateMap();
 
-    umountRomdisk("/game");
+    assert(entities_size == 0);
 
     getAvailableMapPosition(&entities[PLAYER_ID].pos);
     entities[PLAYER_ID].model = 0;
     entities[PLAYER_ID].health = 10;
     entities[PLAYER_ID].scale = 0.24;
     entities[PLAYER_ID].speed = 0.05;
-    entities[PLAYER_ID].hit_radius = 0.9375;
     entities[PLAYER_ID].type = ET_PLAYER;
+    entities_size++;
 
-    getAvailableMapPosition(&entities[1].pos);
-    entities[1].model = 0;
-    entities[1].health = 3;
-    entities[1].scale = 0.24;
-    entities[1].speed = 0.02;
-    entities[1].hit_radius = 0.9375;
-    entities[1].damage = 1;
-    entities[1].type = ET_ENEMY_BASIC;
+    loadEntitiesFromFile("/game/enemies.ent");
 
-    getAvailableMapPosition(&entities[2].pos);
-    entities[2].model = 0;
-    entities[2].health = 3;
-    entities[2].scale = 0.24;
-    entities[2].speed = 0.02;
-    entities[2].hit_radius = 0.9375;
-    entities[2].damage = 1;
-    entities[2].type = ET_ENEMY_BASIC;
+    umountRomdisk("/game");
 
-    entities_size = 3;
+    endLoading();
 
     while (cur_gs == GS_GAME) {
         maple_device_t *cont = maple_enum_type(0, MAPLE_FUNC_CONTROLLER);

@@ -63,8 +63,6 @@ struct projectile {
     float speed;
     float scale;
 
-    float hit_radius;
-
     int damage;
 
     struct projectile *next;
@@ -74,27 +72,33 @@ struct projectile {
 enum entityType {
     ET_PLAYER,
     ET_ENEMY_BASIC,
+
+    ET_MAX
 };
 
 struct entity {
+    enum entityType type;
+
+    int model;
+
+    int health;
+    int cooldown;
+
+    int max_health;
+    int damage;
+    int shot_rate;
+    float range;
+    float shot_speed;
+    float speed;
+    float knockback;
+    float scale;
+    float shot_scale;
+
     struct vector pos;
     struct vector vel;
     struct vector dir;
 
-    int model;
-    float scale;
-
     struct quaternion rotation;
-
-    float speed;
-    float hit_radius;
-
-    int health;
-    int damage;
-
-    int cooldown;
-
-    enum entityType type;
 };
 
 enum mapCell {

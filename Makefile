@@ -3,7 +3,7 @@ PROJECT = nave
 TARGET = $(PROJECT).elf
 OBJS = main.o
 
-CFLAGS= -Ofast -std=gnu99
+CFLAGS= -Ofast -std=gnu11
 
 cdi: romdisk.img $(TARGET)
 	IP_TEMPLATE_FILE=/opt/toolchains/dc/kos/utils/makeip/IP.TMPL $(KOS_BASE)/utils/makeip/makeip ip.txt IP.BIN

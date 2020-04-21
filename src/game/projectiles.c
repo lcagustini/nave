@@ -31,7 +31,7 @@ bool projectileCollidesWithEntity(struct projectile *cur) {
 
         struct vector next_pos = vectorAdd(cur->pos, vectorScale(cur->speed, cur->vel));
 
-        bool collides = sphereCollidesSphere(entities[i].pos, entities[i].hit_radius * entities[i].scale, next_pos, cur->hit_radius * cur->scale);
+        bool collides = sphereCollidesSphere(entities[i].pos, HIT_RADIUS * entities[i].scale, next_pos, HIT_RADIUS * cur->scale);
 
         if (collides) {
             entities[i].health -= cur->damage;
@@ -57,7 +57,7 @@ bool projectileCollidesWithMap(struct projectile *proj) {
                 struct vector vertex1 = vectorScale(MAP_SCALE, vectorAdd(model->vertices[3*i+1], cell_pos));
                 struct vector vertex2 = vectorScale(MAP_SCALE, vectorAdd(model->vertices[3*i+2], cell_pos));
 
-                float scaled_radius = proj->hit_radius * proj->scale;
+                float scaled_radius = HIT_RADIUS * proj->scale;
 
                 bool collides = sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2);
 

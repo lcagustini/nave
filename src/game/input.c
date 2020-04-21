@@ -47,13 +47,12 @@ void getInput(cont_state_t *state) {
                 .model = entities[PLAYER_ID].model,
                 .speed = 0.09,
                 .scale = 0.1,
-                .hit_radius = 0.9375,
                 .damage = 1,
                 .next = NULL,
                 .prev = NULL
             };
             newProjectile(projectiles, proj);
-            entities[PLAYER_ID].cooldown = 60;
+            entities[PLAYER_ID].cooldown = 10;
         }
     }
 }
