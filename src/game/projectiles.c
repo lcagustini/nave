@@ -34,6 +34,7 @@ bool projectileCollidesWithEntity(struct projectile *cur) {
         bool collides = sphereCollidesSphere(entities[i].pos, HIT_RADIUS * entities[i].scale, next_pos, HIT_RADIUS * cur->scale);
 
         if (collides) {
+            entities[i].vel = vectorAdd(vectorScale(cur->knockback, cur->vel), entities[i].vel);
             entities[i].health -= cur->damage;
             deleteProjectile(cur);
             return true;
@@ -72,7 +73,11 @@ bool projectileCollidesWithMap(struct projectile *proj) {
 }
 
 void doProjectileFrame(struct projectile *cur) {
+    if (cur->range <= 0) cur->vel.z -= GRAVITY;
     if (projectileCollidesWithMap(cur)) return;
     if (projectileCollidesWithEntity(cur)) return;
-    cur->pos = vectorAdd(cur->pos, vectorScale(cur->speed, cur->vel));
+
+    struct vector scaled_vel = vectorScale(cur->speed, cur->vel);
+    cur->range -= vectorLen(scaled_vel);
+    cur->pos = vectorAdd(cur->pos, scaled_vel);
 }

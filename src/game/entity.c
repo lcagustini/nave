@@ -1,9 +1,18 @@
 void loadPlayer() {
     assert(entities_size == 0);
 
-    entities[PLAYER_ID].health = 10;
-    entities[PLAYER_ID].scale = 0.24;
-    entities[PLAYER_ID].speed = 0.05;
+    memset(&entities[PLAYER_ID], 0, sizeof(struct entity));
+
+    entities[PLAYER_ID].max_health = 10;
+    entities[PLAYER_ID].health = entities[PLAYER_ID].max_health;
+    entities[PLAYER_ID].damage = 1;
+    entities[PLAYER_ID].shot_rate = 15;
+    entities[PLAYER_ID].range = 10;
+    entities[PLAYER_ID].shot_speed = 0.09f;
+    entities[PLAYER_ID].speed = 0.05f;
+    entities[PLAYER_ID].knockback = 0.01f;
+    entities[PLAYER_ID].scale = 0.24f;
+    entities[PLAYER_ID].shot_scale = 0.1f;
     entities[PLAYER_ID].type = ET_PLAYER;
     entities_size++;
 }
@@ -99,9 +108,7 @@ void entityCollidesWithPlayer(int id) {
 }
 
 void doBasicFrame(int id) {
-    float z = entities[id].vel.z;
-    entities[id].vel = vectorSubtract(entities[PLAYER_ID].pos, entities[id].pos);
-    entities[id].vel.z = z;
+    //struct vector target = vectorSubtract(entities[PLAYER_ID].pos, entities[id].pos); //TODO mix AI and knockback
     entities[id].dir = entities[id].vel;
     entities[id].dir.z = 0;
     vectorNormalize(&entities[id].dir);

@@ -50,6 +50,8 @@ void runTitle() {
     }
     loaded_models_n = 0;
 
+    entities_size = 0;
+
     // Should go in character selection screen
     loadPlayer();
     cur_map.level = 1;

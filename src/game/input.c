@@ -45,14 +45,16 @@ void getInput(cont_state_t *state) {
                 .pos = entities[PLAYER_ID].pos,
                 .vel = entities[PLAYER_ID].dir,
                 .model = entities[PLAYER_ID].model,
-                .speed = 0.09,
-                .scale = 0.1,
-                .damage = 1,
+                .speed = entities[PLAYER_ID].shot_speed,
+                .scale = entities[PLAYER_ID].shot_scale,
+                .range = entities[PLAYER_ID].range,
+                .knockback = entities[PLAYER_ID].knockback,
+                .damage = entities[PLAYER_ID].damage,
                 .next = NULL,
                 .prev = NULL
             };
             newProjectile(projectiles, proj);
-            entities[PLAYER_ID].cooldown = 10;
+            entities[PLAYER_ID].cooldown = entities[PLAYER_ID].shot_rate;
         }
     }
 }

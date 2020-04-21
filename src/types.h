@@ -62,6 +62,8 @@ struct projectile {
     int model;
     float speed;
     float scale;
+    float range;
+    float knockback;
 
     int damage;
 
@@ -84,15 +86,15 @@ struct entity {
     int health;
     int cooldown;
 
-    int max_health; //TODO
-    int damage; //TODO
-    int shot_rate; //TODO
-    float range; //TODO
-    float shot_speed; //TODO
+    int max_health;
+    int damage;
+    int shot_rate;
+    float range;
+    float shot_speed;
     float speed;
-    float knockback; //TODO
+    float knockback;
     float scale;
-    float shot_scale; //TODO
+    float shot_scale;
 
     struct vector pos;
     struct vector vel;

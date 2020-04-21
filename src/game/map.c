@@ -6,7 +6,7 @@ void getAvailableMapPosition(struct vector *pos) {
         if (cur_map.grid[gx][gy] == MC_FLOOR) {
             pos->x = 2*MAP_SCALE*gx;
             pos->y = 2*MAP_SCALE*gy;
-            pos->z = 3.0f;
+            pos->z = 1.0f;
 
             return;
         }
