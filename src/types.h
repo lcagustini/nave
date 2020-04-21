@@ -84,15 +84,15 @@ struct entity {
     int health;
     int cooldown;
 
-    int max_health;
-    int damage;
-    int shot_rate;
-    float range;
-    float shot_speed;
+    int max_health; //TODO
+    int damage; //TODO
+    int shot_rate; //TODO
+    float range; //TODO
+    float shot_speed; //TODO
     float speed;
-    float knockback;
+    float knockback; //TODO
     float scale;
-    float shot_scale;
+    float shot_scale; //TODO
 
     struct vector pos;
     struct vector vel;

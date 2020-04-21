@@ -4,7 +4,7 @@
 
 #define MAP_SIZE 30
 #define MAP_WORKERS 16
-#define MAP_WORKTIME 60
+#define MAP_WORKTIME 80
 
 #define PLAYER_ID 0
 
