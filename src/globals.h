@@ -5,6 +5,7 @@ int entities_size;
 int entities_models[ET_MAX];
 
 struct projectile *projectiles;
+int projectiles_models[PT_MAX];
 
 enum gamestate cur_gs;
 

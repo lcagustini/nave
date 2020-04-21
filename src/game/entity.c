@@ -7,13 +7,14 @@ void loadPlayer() {
     entities[PLAYER_ID].health = entities[PLAYER_ID].max_health;
     entities[PLAYER_ID].damage = 1;
     entities[PLAYER_ID].shot_rate = 15;
-    entities[PLAYER_ID].range = 10;
+    entities[PLAYER_ID].range = 2;
     entities[PLAYER_ID].shot_speed = 0.09f;
     entities[PLAYER_ID].speed = 0.05f;
     entities[PLAYER_ID].knockback = 0.021f;
     entities[PLAYER_ID].scale = 0.24f;
     entities[PLAYER_ID].shot_scale = 0.1f;
     entities[PLAYER_ID].type = ET_PLAYER;
+    entities[PLAYER_ID].shot_type = PT_NORMAL;
     entities_size++;
 }
 
@@ -105,26 +106,20 @@ void entityCollidesWithPlayer(int id) {
     }
 }
 
-void doBasicFrame(int id) {
-    struct vector target = vectorSubtract(entities[PLAYER_ID].pos, entities[id].pos);
-    vectorNormalize(&target);
-    target = vectorScale(0.0005f, target);
-    entities[id].vel = vectorAdd(entities[id].vel, target);
-    entities[id].dir = entities[id].vel;
-    entities[id].dir.z = 0;
-    vectorNormalize(&entities[id].dir);
-}
-
-void doPlayerFrame() {
-}
-
 void doEntityFrame(int id) {
     switch (entities[id].type) {
         case ET_PLAYER:
-            doPlayerFrame();
             break;
         case ET_ENEMY_BASIC:
-            doBasicFrame(id);
+            {
+                struct vector target = vectorSubtract(entities[PLAYER_ID].pos, entities[id].pos);
+                vectorNormalize(&target);
+                target = vectorScale(0.0005f, target);
+                entities[id].vel = vectorAdd(entities[id].vel, target);
+                entities[id].dir = entities[id].vel;
+                entities[id].dir.z = 0;
+                vectorNormalize(&entities[id].dir);
+            }
             break;
         default:
             return;

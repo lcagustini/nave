@@ -54,6 +54,8 @@ void runGame() {
 
     entities_models[ET_PLAYER] = loaded_models_n;
     entities_models[ET_ENEMY_BASIC] = loaded_models_n;
+    projectiles_models[PT_NORMAL] = loaded_models_n;
+    projectiles_models[PT_EXPLOSIVE] = loaded_models_n;
     loadModel("/game/player.obj", "/game/player.vq", VERTEX_ALL, 256);
 
     cur_map.models[MC_FLOOR] = loaded_models_n;

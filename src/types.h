@@ -55,9 +55,16 @@ enum gamestate {
     GS_GAME,
 };
 
+enum projectileType {
+    PT_NORMAL,
+    PT_EXPLOSIVE,
+
+    PT_MAX
+};
+
 struct projectile {
-    struct vector pos;
-    struct vector vel;
+    enum projectileType type;
+    int owner_entity;
 
     int model;
     float speed;
@@ -66,6 +73,9 @@ struct projectile {
     float knockback;
 
     int damage;
+
+    struct vector pos;
+    struct vector vel;
 
     struct projectile *next;
     struct projectile *prev;
@@ -80,6 +90,7 @@ enum entityType {
 
 struct entity {
     enum entityType type;
+    enum projectileType shot_type;
 
     int model;
 

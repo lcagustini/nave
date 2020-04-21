@@ -1,5 +1,10 @@
 void newProjectile(struct projectile *cur, struct projectile proj) {
     struct projectile *new = malloc(sizeof(struct projectile));
+
+    if (proj.type == PT_EXPLOSIVE) proj.vel.z = 0.75f;
+    vectorNormalize(&proj.vel);
+    proj.model = projectiles_models[proj.type];
+
     *new = proj;
 
     if (cur) {
@@ -25,9 +30,19 @@ void deleteProjectile(struct projectile *cur) {
     free(cur);
 }
 
+void projectileDamageArea(struct projectile *cur) { //TODO: take walls into consideration
+    for (int i = 0; i < entities_size; i++) {
+        if (i == cur->owner_entity) continue;
+
+        if (vectorLenSquared(vectorSubtract(entities[i].pos, cur->pos)) < cur->range*cur->range) {
+            entities[i].health -= cur->damage;
+        }
+    }
+}
+
 bool projectileCollidesWithEntity(struct projectile *cur) {
     for (int i = 0; i < entities_size; i++) {
-        if (i == PLAYER_ID) continue;
+        if (i == cur->owner_entity) continue;
 
         struct vector next_pos = vectorAdd(cur->pos, vectorScale(cur->speed, cur->vel));
 
@@ -35,7 +50,10 @@ bool projectileCollidesWithEntity(struct projectile *cur) {
 
         if (collides) {
             entities[i].vel = vectorAdd(vectorScale(cur->knockback, cur->vel), entities[i].vel);
+
             entities[i].health -= cur->damage;
+            projectileDamageArea(cur);
+
             deleteProjectile(cur);
             return true;
         }
@@ -63,6 +81,8 @@ bool projectileCollidesWithMap(struct projectile *proj) {
                 bool collides = sphereCollidesTriangle(next_pos, scaled_radius, vertex0, vertex1, vertex2);
 
                 if (collides) {
+                    projectileDamageArea(proj);
+
                     deleteProjectile(proj);
                     return true;
                 }
@@ -73,11 +93,22 @@ bool projectileCollidesWithMap(struct projectile *proj) {
 }
 
 void doProjectileFrame(struct projectile *cur) {
-    if (cur->range <= 0) cur->vel.z -= GRAVITY;
+    struct vector scaled_vel = vectorScale(cur->speed, cur->vel);
+
+    switch (cur->type) {
+        case PT_NORMAL:
+            if (cur->range <= 0) cur->vel.z -= GRAVITY;
+            cur->range -= vectorLen(scaled_vel);
+            break;
+        case PT_EXPLOSIVE:
+            cur->vel.z -= 2.5f*GRAVITY;
+            break;
+        default:
+            return;
+    }
+
     if (projectileCollidesWithMap(cur)) return;
     if (projectileCollidesWithEntity(cur)) return;
 
-    struct vector scaled_vel = vectorScale(cur->speed, cur->vel);
-    cur->range -= vectorLen(scaled_vel);
     cur->pos = vectorAdd(cur->pos, scaled_vel);
 }
