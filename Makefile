@@ -5,9 +5,9 @@ OBJS = main.o
 
 CFLAGS= -Ofast -std=gnu11
 
-cdi: romdisk.img $(TARGET)
+cdi: romdisk $(TARGET)
 	IP_TEMPLATE_FILE=/opt/toolchains/dc/kos/utils/makeip/IP.TMPL $(KOS_BASE)/utils/makeip/makeip ip.txt IP.BIN
-	mkisofs -C 0,11702 -V $(PROJECT) -G IP.BIN -r -J -l -o $(PROJECT).iso 1ST_READ.BIN bin/level1_romdisk.img bin/title_romdisk.img
+	mkisofs -C 0,11702 -V $(PROJECT) -G IP.BIN -r -J -l -o $(PROJECT).iso 1ST_READ.BIN bin/*_romdisk.img
 	$(KOS_BASE)/utils/cdi4dc/cdi4dc $(PROJECT).iso $(PROJECT).cdi
 	@rm $(PROJECT).iso IP.BIN 1ST_READ.BIN
 
@@ -20,11 +20,7 @@ $(TARGET): $(OBJS)
 %.o: src/%.c
 	kos-cc $(CFLAGS) -c $< -o bin/$@
 
-romdisk.img: gfx
-	$(KOS_GENROMFS) -f bin/level1_romdisk.img -d romdisk/level1 -v
-	$(KOS_GENROMFS) -f bin/title_romdisk.img -d romdisk/title -v
-
-gfx: 
+romdisk:
 	-rm -rf romdisk/
 	sh make_romdisk.sh
 

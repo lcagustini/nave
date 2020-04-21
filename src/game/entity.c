@@ -1,3 +1,13 @@
+void loadPlayer() {
+    assert(entities_size == 0);
+
+    entities[PLAYER_ID].health = 10;
+    entities[PLAYER_ID].scale = 0.24;
+    entities[PLAYER_ID].speed = 0.05;
+    entities[PLAYER_ID].type = ET_PLAYER;
+    entities_size++;
+}
+
 void entityCollidesWithMap(int id, int dir) {
     struct vector masked_vel = {
         dir == VD_X ? entities[id].vel.x : 0,

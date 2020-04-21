@@ -49,4 +49,8 @@ void runTitle() {
         destroyModel(i);
     }
     loaded_models_n = 0;
+
+    // Should go in character selection screen
+    loadPlayer();
+    cur_map.level = 1;
 }

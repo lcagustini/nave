@@ -46,7 +46,10 @@ void drawFrame() {
 void runGame() {
     startLoading();
 
-    mountRomdisk("/cd/level1_romdisk.img", "/game");
+    char romdisk[40];
+    sprintf(romdisk, "/cd/level%d_romdisk.img", cur_map.level);
+
+    mountRomdisk(romdisk, "/game");
     assert(loaded_models_n == 0);
 
     entities_models[ET_PLAYER] = loaded_models_n;
@@ -61,15 +64,10 @@ void runGame() {
 
     generateMap();
 
-    assert(entities_size == 0);
+    assert(entities_size == 1);
 
     getAvailableMapPosition(&entities[PLAYER_ID].pos);
-    entities[PLAYER_ID].model = 0;
-    entities[PLAYER_ID].health = 10;
-    entities[PLAYER_ID].scale = 0.24;
-    entities[PLAYER_ID].speed = 0.05;
-    entities[PLAYER_ID].type = ET_PLAYER;
-    entities_size++;
+    entities[PLAYER_ID].model = entities_models[entities[PLAYER_ID].type];
 
     loadEntitiesFromFile("/game/enemies.ent");
 
@@ -91,18 +89,21 @@ void runGame() {
             i = checkDeadEntity(i);
         }
 
+        if (entities_size == 1) {
+            cur_map.level++;
+            if (cur_map.level > 2) cur_gs = GS_TITLE; //TODO: goto ending
+            break;
+        }
+
         drawFrame();
 
         glutSwapBuffers();
     }
 
-    glDisable(GL_LIGHTING);
-    glDisable(GL_LIGHT0);
-
     while (projectiles) {
         deleteProjectile(projectiles);
     }
-    entities_size = 0;
+    entities_size = 1;
 
     for (int i = 0; i < loaded_models_n; i++) {
         destroyModel(i);

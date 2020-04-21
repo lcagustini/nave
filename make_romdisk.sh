@@ -28,3 +28,9 @@ for file in $asset_folder; do
         fi
     fi
 done
+
+romdisks=$(ls romdisk/)
+
+for file in $romdisks; do
+    $KOS_GENROMFS -f "bin/"$file"_romdisk.img" -d romdisk/$file -v
+done
