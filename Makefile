@@ -5,6 +5,8 @@ OBJS = main.o
 
 CFLAGS= -Ofast -std=gnu11
 
+.PHONY: romdisk clean
+
 cdi: romdisk $(TARGET)
 	IP_TEMPLATE_FILE=/opt/toolchains/dc/kos/utils/makeip/IP.TMPL $(KOS_BASE)/utils/makeip/makeip ip.txt IP.BIN
 	mkisofs -C 0,11702 -V $(PROJECT) -G IP.BIN -r -J -l -o $(PROJECT).iso 1ST_READ.BIN bin/*_romdisk.img

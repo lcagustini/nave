@@ -1,6 +1,6 @@
 4
 type 1
-health 3
+health 10
 damage 1
 shot_rate 10
 range 10
@@ -12,7 +12,7 @@ shot_scale 0
 next
 
 type 1
-health 3
+health 10
 damage 1
 shot_rate 10
 range 10
@@ -24,7 +24,7 @@ shot_scale 0
 next
 
 type 1
-health 3
+health 10
 damage 1
 shot_rate 10
 range 10
@@ -36,7 +36,7 @@ shot_scale 0
 next
 
 type 1
-health 3
+health 10
 damage 1
 shot_rate 10
 range 10

@@ -10,7 +10,7 @@ void loadPlayer() {
     entities[PLAYER_ID].range = 10;
     entities[PLAYER_ID].shot_speed = 0.09f;
     entities[PLAYER_ID].speed = 0.05f;
-    entities[PLAYER_ID].knockback = 0.01f;
+    entities[PLAYER_ID].knockback = 0.021f;
     entities[PLAYER_ID].scale = 0.24f;
     entities[PLAYER_ID].shot_scale = 0.1f;
     entities[PLAYER_ID].type = ET_PLAYER;
@@ -99,16 +99,17 @@ void entityCollidesWithPlayer(int id) {
     if (collides) {
         struct vector v = vectorSubtract(entities[id].pos, entities[PLAYER_ID].pos);
         vectorNormalize(&v);
-        v = vectorScale(entities[id].speed, v);
-
-        entities[id].vel = vectorAdd(entities[id].vel, v);
+        entities[id].vel = vectorAdd(vectorScale(0.02f, v), entities[id].vel);
 
         entities[PLAYER_ID].health -= entities[id].damage;
     }
 }
 
 void doBasicFrame(int id) {
-    //struct vector target = vectorSubtract(entities[PLAYER_ID].pos, entities[id].pos); //TODO mix AI and knockback
+    struct vector target = vectorSubtract(entities[PLAYER_ID].pos, entities[id].pos);
+    vectorNormalize(&target);
+    target = vectorScale(0.0005f, target);
+    entities[id].vel = vectorAdd(entities[id].vel, target);
     entities[id].dir = entities[id].vel;
     entities[id].dir.z = 0;
     vectorNormalize(&entities[id].dir);

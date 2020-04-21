@@ -34,3 +34,5 @@ romdisks=$(ls romdisk/)
 for file in $romdisks; do
     $KOS_GENROMFS -f "bin/"$file"_romdisk.img" -d romdisk/$file -v
 done
+
+sed -i -E "s/Release Date  : [0-9]{8}/Release Date  : $(date +'%Y%m%d')/g" ip.txt
