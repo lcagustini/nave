@@ -1,46 +1,34 @@
-void runTitle() {
-    mountRomdisk("/cd/title_romdisk.img", "/title");
+void runCharSelection() {
+    mountRomdisk("/cd/charselect_romdisk.img", "/charselect");
 
     assert(loaded_models_n == 0);
 
-    loadModel("/title/map.obj", "/title/map.vq", VERTEX_ALL, 512);
-    loadModel("/title/title.obj", "/title/title.vq", VERTEX_ALL_ALPHA, 256);
+    loadModel("/charselect/background.obj", "/charselect/background.vq", VERTEX_ALL, 512);
 
-    umountRomdisk("/title");
+    umountRomdisk("/charselect");
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-    float rotation = 0;
-
     global_timer = 0;
-    while (cur_gs == GS_TITLE) {
+    while (cur_gs == GS_CHARSELECT) {
         global_timer++;
 
         maple_device_t *cont = maple_enum_type(0, MAPLE_FUNC_CONTROLLER);
         cont_state_t *state = (cont_state_t *)maple_dev_status(cont);
 
         if (global_timer > INPUT_DELAY && state->buttons & CONT_START) {
-            cur_gs = GS_CHARSELECT;
+            cur_gs = GS_GAME;
         }
-
-        rotation += 0.025;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 
-        glTranslatef(0, 0, -14.0f);
+        glTranslatef(0, 0, -1.5f);
 
         glPushMatrix();
-        glTranslatef(0, 0, 8.0f);
-        drawModel(1);
-        glPopMatrix();
-
-        glPushMatrix();
-        glRotatef(rotation, 0, 0, 1);
-        glScalef(0.25, 0.25, 0.25);
         drawModel(0);
         glPopMatrix();
 
@@ -52,4 +40,8 @@ void runTitle() {
         destroyModel(i);
     }
     loaded_models_n = 0;
+
+    entities_size = 0;
+    loadPlayer();
+    cur_map.level = 1;
 }

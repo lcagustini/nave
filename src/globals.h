@@ -14,3 +14,5 @@ int loaded_models_n;
 
 thrd_t loading_thread;
 int loading_progress;
+
+unsigned long long global_timer;

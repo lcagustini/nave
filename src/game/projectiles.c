@@ -31,6 +31,8 @@ void deleteProjectile(struct projectile *cur) {
 }
 
 void projectileDamageArea(struct projectile *cur) { //TODO: take walls into consideration
+    if (cur->type != PT_EXPLOSIVE) return;
+
     for (int i = 0; i < entities_size; i++) {
         if (i == cur->owner_entity) continue;
 

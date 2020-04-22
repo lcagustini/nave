@@ -77,11 +77,17 @@ void runGame() {
 
     endLoading();
 
+    global_timer = 0;
     while (cur_gs == GS_GAME) {
+        global_timer++;
+        printf("%llu\n", global_timer);
+
         maple_device_t *cont = maple_enum_type(0, MAPLE_FUNC_CONTROLLER);
         cont_state_t *state = (cont_state_t *)maple_dev_status(cont);
 
-        getInput(state);
+        if (global_timer > INPUT_DELAY) {
+            getInput(state);
+        }
 
         for (struct projectile *cur = projectiles; cur; cur = cur->next) {
             doProjectileFrame(cur);

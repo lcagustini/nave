@@ -9,6 +9,7 @@
 #define PLAYER_ID 0
 
 #define DEADZONE 25
+#define INPUT_DELAY 30
 
 #define GRAVITY 0.005f
 #define HIT_RADIUS 0.9375f

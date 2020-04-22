@@ -42,6 +42,7 @@ void loadModel(const char *obj_filename, const char *texture_filename, enum face
             struct textureCoord t = {};
             fscanf(f, " %f %f", &t.x, &t.y);
             t.y = 1 - t.y;
+            t.x = 1 - t.x;
             file.texture_coords[++file.num_texture_coords] = t;
         }
         else if (!strcmp(buffer, "f")) {

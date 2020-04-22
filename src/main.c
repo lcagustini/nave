@@ -29,6 +29,7 @@
 
 #include "gamestates/game.c"
 #include "gamestates/title.c"
+#include "gamestates/charselection.c"
 
 int main(int argc, char **argv) {
     glKosInit();
@@ -58,6 +59,9 @@ int main(int argc, char **argv) {
                 break;
             case GS_GAME:
                 runGame();
+                break;
+            case GS_CHARSELECT:
+                runCharSelection();
                 break;
             default:
                 return ARCH_EXIT_MENU;

@@ -53,6 +53,7 @@ struct quaternion {
 enum gamestate {
     GS_TITLE,
     GS_GAME,
+    GS_CHARSELECT,
 };
 
 enum projectileType {
