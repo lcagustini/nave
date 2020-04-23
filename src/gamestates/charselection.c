@@ -32,7 +32,7 @@ void runCharSelection() {
     endLoading();
 
     float rotation = 0;
-    int cur_selection = 1;
+    selected_player = 1;
 
     global_timer = 0;
     while (cur_gs == GS_CHARSELECT) {
@@ -44,19 +44,19 @@ void runCharSelection() {
         if (global_timer > INPUT_DELAY) {
             if (state->buttons & CONT_START) cur_gs = GS_GAME;
             if (state->buttons & CONT_DPAD_LEFT) {
-                cur_selection--;
+                selected_player--;
                 global_timer = 0;
             }
             if (state->buttons & CONT_DPAD_RIGHT) {
-                cur_selection++;
+                selected_player++;
                 global_timer = 0;
             }
         }
-        if (cur_selection < 1) {
-            cur_selection = player_count;
+        if (selected_player < 1) {
+            selected_player = player_count;
         }
-        else if (cur_selection > player_count) {
-            cur_selection = 1;
+        else if (selected_player > player_count) {
+            selected_player = 1;
         }
 
         rotation += 0.4;
@@ -74,7 +74,7 @@ void runCharSelection() {
 
         for (int i = 1; i <= player_count; i++) {
             glPushMatrix();
-            glTranslatef(((i-cur_selection))/2.0f, 0, 0);
+            glTranslatef(((i-selected_player))/2.0f, 0, 0);
             glRotatef(rotation, 0, 1, 0);
             glScalef(0.13f, 0.13f, 0.13f);
             drawModel(i);
@@ -90,7 +90,5 @@ void runCharSelection() {
     loaded_models_n = 0;
 
     entities_size = 0;
-
-    selected_player = cur_selection;
     cur_map.level = 1;
 }
