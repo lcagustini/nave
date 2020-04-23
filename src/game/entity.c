@@ -196,6 +196,9 @@ int loadEntitiesFromFile(const char *filename) {
             else if (!strcmp(buffer, "shot_scale")) {
                 fscanf(f, " %f", &ent->shot_scale);
             }
+            else if (!strcmp(buffer, "shot_type")) {
+                fscanf(f, " %u", &ent->shot_type);
+            }
             else if (!strcmp(buffer, "next")) {
                 break;
             }

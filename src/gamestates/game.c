@@ -44,19 +44,26 @@ void drawFrame() {
 }
 
 void runGame() {
+    char buffer1[40];
+    char buffer2[40];
+
     startLoading();
 
-    char romdisk[40];
-    sprintf(romdisk, "/cd/level%d_romdisk.img", cur_map.level);
-
-    mountRomdisk(romdisk, "/game");
+    mountRomdisk("/cd/players_romdisk.img", "/players");
     assert(loaded_models_n == 0);
 
-    entities_models[ET_PLAYER] = loaded_models_n;
     entities_models[ET_ENEMY_BASIC] = loaded_models_n;
     projectiles_models[PT_NORMAL] = loaded_models_n;
     projectiles_models[PT_EXPLOSIVE] = loaded_models_n;
-    loadModel("/game/player.obj", "/game/player.vq", VERTEX_ALL, 256);
+    loadModel("/players/player1.obj", "/players/player1.vq", VERTEX_ALL, 256);
+
+    entities_models[ET_PLAYER] = loaded_models_n;
+    sprintf(buffer1, "/players/player%d.obj", selected_player);
+    sprintf(buffer2, "/players/player%d.vq", selected_player);
+    loadModel(buffer1, buffer2, VERTEX_ALL, 256);
+
+    sprintf(buffer1, "/cd/level%d_romdisk.img", cur_map.level);
+    mountRomdisk(buffer1, "/game");
 
     cur_map.models[MC_FLOOR] = loaded_models_n;
     loadModel("/game/floor.obj", "/game/floor.vq", VERTEX_ALL, 128);
@@ -66,21 +73,20 @@ void runGame() {
 
     generateMap();
 
-    assert(entities_size == 1);
+    assert(entities_size == 0);
 
-    getAvailableMapPosition(&entities[PLAYER_ID].pos);
-    entities[PLAYER_ID].model = entities_models[entities[PLAYER_ID].type];
-
+    sprintf(buffer1, "/players/player%d.ent", selected_player);
+    loadEntitiesFromFile(buffer1);
     loadEntitiesFromFile("/game/enemies.ent");
 
     umountRomdisk("/game");
+    umountRomdisk("/players");
 
     endLoading();
 
     global_timer = 0;
     while (cur_gs == GS_GAME) {
         global_timer++;
-        printf("%llu\n", global_timer);
 
         maple_device_t *cont = maple_enum_type(0, MAPLE_FUNC_CONTROLLER);
         cont_state_t *state = (cont_state_t *)maple_dev_status(cont);

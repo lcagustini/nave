@@ -1,4 +1,9 @@
 void runCharSelection() {
+    char buffer1[40];
+    char buffer2[40];
+
+    startLoading();
+
     mountRomdisk("/cd/charselect_romdisk.img", "/charselect");
 
     assert(loaded_models_n == 0);
@@ -7,8 +12,27 @@ void runCharSelection() {
 
     umountRomdisk("/charselect");
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    mountRomdisk("/cd/players_romdisk.img", "/game");
+
+    struct dirent *ep;
+    DIR *dp = opendir ("/game");
+    int player_count = 0;
+    while ((ep = readdir (dp))) player_count++;
+    player_count = (player_count-1)/3;
+    closedir (dp);
+
+    for (int i = 1; i <= player_count; i++) {
+        sprintf(buffer1, "/game/player%d.obj", i);
+        sprintf(buffer2, "/game/player%d.vq", i);
+        loadModel(buffer1, buffer2, VERTEX_ALL, 256);
+    }
+
+    umountRomdisk("/game");
+
+    endLoading();
+
+    float rotation = 0;
+    int cur_selection = 1;
 
     global_timer = 0;
     while (cur_gs == GS_CHARSELECT) {
@@ -17,9 +41,25 @@ void runCharSelection() {
         maple_device_t *cont = maple_enum_type(0, MAPLE_FUNC_CONTROLLER);
         cont_state_t *state = (cont_state_t *)maple_dev_status(cont);
 
-        if (global_timer > INPUT_DELAY && state->buttons & CONT_START) {
-            cur_gs = GS_GAME;
+        if (global_timer > INPUT_DELAY) {
+            if (state->buttons & CONT_START) cur_gs = GS_GAME;
+            if (state->buttons & CONT_DPAD_LEFT) {
+                cur_selection--;
+                global_timer = 0;
+            }
+            if (state->buttons & CONT_DPAD_RIGHT) {
+                cur_selection++;
+                global_timer = 0;
+            }
         }
+        if (cur_selection < 1) {
+            cur_selection = player_count;
+        }
+        else if (cur_selection > player_count) {
+            cur_selection = 1;
+        }
+
+        rotation += 0.4;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -32,9 +72,17 @@ void runCharSelection() {
         drawModel(0);
         glPopMatrix();
 
+        for (int i = 1; i <= player_count; i++) {
+            glPushMatrix();
+            glTranslatef(((i-cur_selection))/2.0f, 0, 0);
+            glRotatef(rotation, 0, 1, 0);
+            glScalef(0.13f, 0.13f, 0.13f);
+            drawModel(i);
+            glPopMatrix();
+        }
+
         glutSwapBuffers();
     }
-    glDisable(GL_BLEND);
 
     for (int i = 0; i < loaded_models_n; i++) {
         destroyModel(i);
@@ -42,6 +90,7 @@ void runCharSelection() {
     loaded_models_n = 0;
 
     entities_size = 0;
-    loadPlayer();
+
+    selected_player = cur_selection;
     cur_map.level = 1;
 }
