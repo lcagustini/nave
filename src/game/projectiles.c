@@ -37,6 +37,10 @@ void projectileDamageArea(struct projectile *cur) { //TODO: take walls into cons
         if (i == cur->owner_entity) continue;
 
         if (vectorLenSquared(vectorSubtract(entities[i].pos, cur->pos)) < cur->range*cur->range) {
+            struct vector v = vectorSubtract(entities[i].pos, cur->pos);
+            vectorNormalize(&v);
+            entities[i].vel = vectorAdd(vectorScale(0.02f, v), entities[i].vel);
+
             entities[i].health -= cur->damage;
         }
     }

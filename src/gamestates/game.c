@@ -73,10 +73,10 @@ void runGame() {
 
     generateMap();
 
-    assert(entities_size == 0);
-
-    sprintf(buffer1, "/players/player%d.ent", selected_player);
-    loadEntitiesFromFile(buffer1);
+    if (entities_size == 0) {
+        sprintf(buffer1, "/players/player%d.ent", selected_player);
+        loadEntitiesFromFile(buffer1);
+    }
     loadEntitiesFromFile("/game/enemies.ent");
 
     umountRomdisk("/game");
@@ -105,7 +105,10 @@ void runGame() {
 
         if (entities_size == 1) {
             cur_map.level++;
-            if (cur_map.level > 2) cur_gs = GS_TITLE; //TODO: goto ending
+            if (cur_map.level > 2) {
+                puts("goto ending");
+                cur_gs = GS_TITLE; //TODO: goto ending
+            }
             break;
         }
 
