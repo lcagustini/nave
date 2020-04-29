@@ -5,7 +5,7 @@ Area Symbols  : JUE
 Peripherals   : E000F10
 Product No    : T0000
 Version       : 0.0.1
-Release Date  : 20200423
+Release Date  : 20200429
 Boot Filename : 1ST_READ.BIN
 SW Maker Name : Lucas Agustini
 Game Title    : Nave

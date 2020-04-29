@@ -1,21 +1,25 @@
-void loadPlayer() {
-    assert(entities_size == 0);
+void addVelocityToEntity(struct vector vel, float scale, int id) {
+    vectorNormalize(&vel);
+    vel = vectorScale(scale, vel);
+    vel = vectorSubtract(vel, entities[id].vel);
 
-    memset(&entities[PLAYER_ID], 0, sizeof(struct entity));
+    /*
+    if (vectorLen(vel) > entities[id].speed) {
+        vectorNormalize(&vel);
+        vel = vectorScale(entities[id].speed, vel);
+    }
+    */
 
-    entities[PLAYER_ID].max_health = 10;
-    entities[PLAYER_ID].health = entities[PLAYER_ID].max_health;
-    entities[PLAYER_ID].damage = 1;
-    entities[PLAYER_ID].shot_rate = 15;
-    entities[PLAYER_ID].range = 2;
-    entities[PLAYER_ID].shot_speed = 0.09f;
-    entities[PLAYER_ID].speed = 0.05f;
-    entities[PLAYER_ID].knockback = 0.021f;
-    entities[PLAYER_ID].scale = 0.24f;
-    entities[PLAYER_ID].shot_scale = 0.1f;
-    entities[PLAYER_ID].type = ET_PLAYER;
-    entities[PLAYER_ID].shot_type = PT_NORMAL;
-    entities_size++;
+    if (scale == entities[id].speed) vel = vectorScale(0.35f, vel);
+    vel = vectorAdd(entities[id].vel, vel);
+    /*
+    if (vectorLen(vel) > entities[id].speed) {
+        vectorNormalize(&vel);
+        vel = vectorScale(entities[id].speed, vel);
+    }
+    */
+
+    entities[id].vel = vel;
 }
 
 void entityCollidesWithMap(int id, int dir) {
@@ -99,8 +103,8 @@ void entityCollidesWithPlayer(int id) {
 
     if (collides) {
         struct vector v = vectorSubtract(entities[id].pos, entities[PLAYER_ID].pos);
-        vectorNormalize(&v);
-        entities[id].vel = vectorAdd(vectorScale(0.02f, v), entities[id].vel);
+
+        addVelocityToEntity(v, entities[id].speed, id);
 
         entities[PLAYER_ID].health -= entities[id].damage;
     }
@@ -113,9 +117,9 @@ void doEntityFrame(int id) {
         case ET_ENEMY_BASIC:
             {
                 struct vector target = vectorSubtract(entities[PLAYER_ID].pos, entities[id].pos);
-                vectorNormalize(&target);
-                target = vectorScale(0.0005f, target);
-                entities[id].vel = vectorAdd(entities[id].vel, target);
+
+                addVelocityToEntity(target, entities[id].speed, id);
+
                 entities[id].dir = entities[id].vel;
                 entities[id].dir.z = 0;
                 vectorNormalize(&entities[id].dir);
@@ -125,9 +129,6 @@ void doEntityFrame(int id) {
             return;
     }
 
-    vectorNormalize2D(&entities[id].vel);
-    entities[id].vel.x *= entities[id].speed;
-    entities[id].vel.y *= entities[id].speed;
     entities[id].vel.z -= GRAVITY;
     entityCollidesWithMap(id, VD_X);
     entityCollidesWithMap(id, VD_Y);

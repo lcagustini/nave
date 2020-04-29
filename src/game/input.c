@@ -36,7 +36,10 @@ void getInput(cont_state_t *state) {
         if (state->buttons & CONT_DPAD_RIGHT) {
             entities[PLAYER_ID].vel.x += 1;
         }
+        vectorNormalize2D(&entities[PLAYER_ID].vel);
     }
+    entities[PLAYER_ID].vel.x *= entities[PLAYER_ID].speed;
+    entities[PLAYER_ID].vel.y *= entities[PLAYER_ID].speed;
 
     if (vectorLenSquared(entities[PLAYER_ID].dir)) {
         if (entities[PLAYER_ID].cooldown <= 0) {

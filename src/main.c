@@ -23,9 +23,9 @@
 
 #include "game/map.c"
 #include "game/physics.c"
+#include "game/entity.c"
 #include "game/projectiles.c"
 #include "game/input.c"
-#include "game/entity.c"
 
 #include "gamestates/game.c"
 #include "gamestates/title.c"

@@ -38,8 +38,7 @@ void projectileDamageArea(struct projectile *cur) { //TODO: take walls into cons
 
         if (vectorLenSquared(vectorSubtract(entities[i].pos, cur->pos)) < cur->range*cur->range) {
             struct vector v = vectorSubtract(entities[i].pos, cur->pos);
-            vectorNormalize(&v);
-            entities[i].vel = vectorAdd(vectorScale(0.02f, v), entities[i].vel);
+            addVelocityToEntity(v, 0.02f, i);
 
             entities[i].health -= cur->damage;
         }
@@ -55,7 +54,7 @@ bool projectileCollidesWithEntity(struct projectile *cur) {
         bool collides = sphereCollidesSphere(entities[i].pos, HIT_RADIUS * entities[i].scale, next_pos, HIT_RADIUS * cur->scale);
 
         if (collides) {
-            entities[i].vel = vectorAdd(vectorScale(cur->knockback, cur->vel), entities[i].vel);
+            addVelocityToEntity(cur->vel, cur->knockback, i);
 
             entities[i].health -= cur->damage;
             projectileDamageArea(cur);
