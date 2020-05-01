@@ -18,3 +18,6 @@ int loading_progress;
 unsigned long long global_timer;
 
 int selected_player;
+
+struct item player_items[20];
+int player_items_n;

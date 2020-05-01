@@ -18,7 +18,7 @@ void runCharSelection() {
     DIR *dp = opendir ("/game");
     int player_count = 0;
     while ((ep = readdir (dp))) player_count++;
-    player_count = (player_count-1)/3;
+    player_count = (player_count-2)/3;
     closedir (dp);
 
     for (int i = 1; i <= player_count; i++) {
@@ -42,7 +42,6 @@ void runCharSelection() {
         cont_state_t *state = (cont_state_t *)maple_dev_status(cont);
 
         if (global_timer > INPUT_DELAY) {
-            if (state->buttons & CONT_START) cur_gs = GS_GAME;
             if (state->buttons & CONT_DPAD_LEFT) {
                 selected_player--;
                 global_timer = 0;
@@ -51,6 +50,7 @@ void runCharSelection() {
                 selected_player++;
                 global_timer = 0;
             }
+            if (state->buttons & CONT_START) cur_gs = GS_GAME;
         }
         if (selected_player < 1) {
             selected_player = player_count;

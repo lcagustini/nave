@@ -54,6 +54,7 @@ enum gamestate {
     GS_TITLE,
     GS_GAME,
     GS_CHARSELECT,
+    GS_ITEMSELECT,
 };
 
 enum projectileType {
@@ -130,4 +131,29 @@ struct map {
 
     int models[MC_MAX];
     int grid[MAP_SIZE][MAP_SIZE];
+};
+
+enum itemType {
+    IT_0,
+    IT_1,
+    IT_2,
+
+    IT_MAX
+};
+
+struct item {
+    enum itemType item_type;
+
+    enum projectileType shot_type;
+
+    int max_health;
+
+    float damage;
+    float shot_rate;
+    float range;
+    float shot_speed;
+    float speed;
+    float knockback;
+    float scale;
+    float shot_scale;
 };

@@ -26,10 +26,12 @@
 #include "game/entity.c"
 #include "game/projectiles.c"
 #include "game/input.c"
+#include "game/items.c"
 
 #include "gamestates/game.c"
 #include "gamestates/title.c"
 #include "gamestates/charselection.c"
+#include "gamestates/itemselection.c"
 
 int main(int argc, char **argv) {
     glKosInit();
@@ -62,6 +64,9 @@ int main(int argc, char **argv) {
                 break;
             case GS_CHARSELECT:
                 runCharSelection();
+                break;
+            case GS_ITEMSELECT:
+                runItemSelection();
                 break;
             default:
                 return ARCH_EXIT_MENU;

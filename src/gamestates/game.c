@@ -74,8 +74,10 @@ void runGame() {
     generateMap();
 
     if (entities_size == 0) {
-        sprintf(buffer1, "/players/player%d.ent", selected_player);
-        loadEntitiesFromFile(buffer1);
+        loadEntitiesFromFile("/players/player.ent");
+        sprintf(buffer1, "/players/player%d.items", selected_player);
+        loadPlayerItems(buffer1);
+        applyAllItems();
     }
     loadEntitiesFromFile("/game/enemies.ent");
 
@@ -109,7 +111,7 @@ void runGame() {
                 puts("goto ending");
                 cur_gs = GS_TITLE; //TODO: goto ending
             }
-            break;
+            cur_gs = GS_ITEMSELECT;
         }
 
         drawFrame();
