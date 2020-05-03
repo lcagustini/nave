@@ -21,3 +21,4 @@ int selected_player;
 
 struct item player_items[20];
 int player_items_n;
+int items_models[IT_MAX];

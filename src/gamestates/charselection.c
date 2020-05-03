@@ -74,7 +74,7 @@ void runCharSelection() {
 
         for (int i = 1; i <= player_count; i++) {
             glPushMatrix();
-            glTranslatef(((i-selected_player))/2.0f, 0, 0);
+            glTranslatef((i-selected_player)/2.0f, 0, 0);
             glRotatef(rotation, 0, 1, 0);
             glScalef(0.13f, 0.13f, 0.13f);
             drawModel(i);
