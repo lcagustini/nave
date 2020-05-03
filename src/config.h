@@ -7,9 +7,10 @@
 #define MAP_WORKTIME 80
 
 #define PLAYER_ID 0
+#define INITIAL_POS_Z 0.8f
 
 #define DEADZONE 25
-#define INPUT_DELAY 30
+#define INPUT_DELAY 20
 
 #define GRAVITY 0.005f
 #define HIT_RADIUS 0.9375f

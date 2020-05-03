@@ -1,5 +1,5 @@
 void removeItem(int i) {
-    entities[PLAYER_ID].max_health /= player_items[i].max_health;
+    entities[PLAYER_ID].max_health -= player_items[i].max_health;
     entities[PLAYER_ID].damage /= player_items[i].damage;
     entities[PLAYER_ID].shot_rate /= player_items[i].shot_rate;
     entities[PLAYER_ID].range /= player_items[i].range;
@@ -26,7 +26,7 @@ void applyAllItems() {
         if (player_items[i].shot_type > entities[PLAYER_ID].shot_type) {
             entities[PLAYER_ID].shot_type = player_items[i].shot_type;
         }
-        entities[PLAYER_ID].max_health *= player_items[i].max_health;
+        entities[PLAYER_ID].max_health += player_items[i].max_health;
         entities[PLAYER_ID].damage *= player_items[i].damage;
         entities[PLAYER_ID].shot_rate *= player_items[i].shot_rate;
         entities[PLAYER_ID].range *= player_items[i].range;
