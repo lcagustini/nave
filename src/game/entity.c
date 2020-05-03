@@ -104,7 +104,7 @@ void entityCollidesWithPlayer(int id) {
     if (collides) {
         struct vector v = vectorSubtract(entities[id].pos, entities[PLAYER_ID].pos);
 
-        addVelocityToEntity(v, entities[id].speed, id);
+        addVelocityToEntity(v, 0.1f, id);
 
         entities[PLAYER_ID].health -= entities[id].damage;
     }
