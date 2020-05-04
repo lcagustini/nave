@@ -76,7 +76,6 @@ void runItemSelection() {
 
         glutSwapBuffers();
     }
-    entities[PLAYER_ID].pos.z = INITIAL_POS_Z;
 
     for (int i = 0; i < loaded_models_n; i++) {
         destroyModel(i);

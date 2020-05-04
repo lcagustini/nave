@@ -9,8 +9,8 @@ void drawFrame() {
     int gx = 0.5f + (entities[PLAYER_ID].pos.x/(2*MAP_SCALE));
     int gy = 0.5f + (entities[PLAYER_ID].pos.y/(2*MAP_SCALE));
 
-    for (int x = max(gx-10, 0); x < min(gx+11, MAP_SIZE); x++) {
-        for (int y = max(gy-7, 0); y < min(gy+8, MAP_SIZE); y++) {
+    for (int x = max(gx-10, 0); x < min(gx+11, cur_map.size); x++) {
+        for (int y = max(gy-7, 0); y < min(gy+8, cur_map.size); y++) {
             glPushMatrix();
             glScalef(MAP_SCALE, MAP_SCALE, MAP_SCALE);
             glTranslatef(2*x, 2*y, 0);
@@ -71,13 +71,16 @@ void runGame() {
     cur_map.models[MC_WALL] = loaded_models_n;
     loadModel("/game/wall.obj", "/game/wall.vq", VERTEX_ALL, 128);
 
-    generateMap();
+    generateMap(15);
 
     if (entities_size == 0) {
         loadEntitiesFromFile("/players/player.ent");
         sprintf(buffer1, "/players/player%d.items", selected_player);
         loadPlayerItems(buffer1);
         applyAllItems();
+    }
+    else {
+        getAvailableMapPosition(&entities[PLAYER_ID].pos);
     }
     loadEntitiesFromFile("/game/enemies.ent");
 

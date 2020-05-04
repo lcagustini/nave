@@ -128,9 +128,10 @@ enum mapCell {
 
 struct map {
     int level;
+    int size;
 
     int models[MC_MAX];
-    int grid[MAP_SIZE][MAP_SIZE];
+    enum mapCell grid[MAX_MAP_SIZE][MAX_MAP_SIZE];
 };
 
 enum itemType {

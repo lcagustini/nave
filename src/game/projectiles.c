@@ -72,8 +72,8 @@ bool projectileCollidesWithMap(struct projectile *proj) {
     int gx = 0.5f + (proj->pos.x/(2*MAP_SCALE));
     int gy = 0.5f + (proj->pos.y/(2*MAP_SCALE));
 
-    for (int x = max(gx-1, 0); x < min(gx+2, MAP_SIZE); x++) {
-        for (int y = max(gy-1, 0); y < min(gy+2, MAP_SIZE); y++) {
+    for (int x = max(gx-1, 0); x < min(gx+2, cur_map.size); x++) {
+        for (int y = max(gy-1, 0); y < min(gy+2, cur_map.size); y++) {
             struct model *model = &loaded_models[cur_map.models[cur_map.grid[x][y]]];
             struct vector cell_pos = {2*x, 2*y, 0};
             for (int i = 0; i < model->num_faces; i++) {
