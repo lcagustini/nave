@@ -71,7 +71,7 @@ void runGame() {
     cur_map.models[MC_WALL] = loaded_models_n;
     loadModel("/game/wall.obj", "/game/wall.vq", VERTEX_ALL, 128);
 
-    generateMap(15);
+    generateMap(30);
 
     if (entities_size == 0) {
         loadEntitiesFromFile("/players/player.ent");

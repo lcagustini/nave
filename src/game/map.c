@@ -32,7 +32,7 @@ void generateMap(int size) {
     bool done = false;
 
     cur_map.size = size;
-    int map_workers = (int) (fsqrt(cur_map.size/2.5f) + 0.5f);
+    int map_workers = (int) (fsqrt(cur_map.size/2.0f) + 0.5f);
     int map_workers_time = (8*cur_map.size)/3;
     printf("size %d map_workers %d map_workers_time %d\n", cur_map.size, map_workers*map_workers, map_workers_time);
     while (!done) {
@@ -40,16 +40,45 @@ void generateMap(int size) {
         memset(cur_map.grid, MC_WALL, sizeof(cur_map.grid));
 
         for (int i = 1; i <= map_workers*map_workers; i++) {
-            int x = 0.8*(((1 + (i-1) % map_workers)*cur_map.size/map_workers)-1);
-            int y = 0.8*(((1 + (i-1) / map_workers)*cur_map.size/map_workers)-1);
-            for (int j = 0; j < map_workers_time; j++) {
-                cur_map.grid[x][y] = MC_P_FLOOR;
-                x = (x + (rand() % 3) -1);
-                y = (y + (rand() % 3) -1);
+            int og_x = 0.8*(((1 + (i-1) % map_workers)*cur_map.size/map_workers)-1);
+            int og_y = 0.8*(((1 + (i-1) / map_workers)*cur_map.size/map_workers)-1);
+
+            int x = og_x;
+            int y = og_y;
+            for (int j = 0; j < 40 + cur_map.size/12; j++) {
                 if (x >= cur_map.size-1) x = cur_map.size-2;
                 if (y >= cur_map.size-1) y = cur_map.size-2;
                 if (x <= 0) x = 1;
                 if (y <= 0) y = 1;
+                cur_map.grid[x][y] = MC_P_FLOOR;
+                x = (x + (rand() % 3) -1);
+                y = (y + (rand() % 3) -1);
+            }
+
+            x = og_x;
+            y = og_y;
+            for (int dir = 0; dir < 4; dir++) {
+                for (int j = 0; j < 5; j++) {
+                    if (x >= cur_map.size-1) x = cur_map.size-2;
+                    if (y >= cur_map.size-1) y = cur_map.size-2;
+                    if (x <= 0) x = 1;
+                    if (y <= 0) y = 1;
+                    cur_map.grid[x][y] = MC_P_FLOOR;
+                    switch(dir) {
+                        case 0:
+                            x++;
+                            break;
+                        case 1:
+                            y++;
+                            break;
+                        case 2:
+                            x--;
+                            break;
+                        case 3:
+                            y--;
+                            break;
+                    }
+                }
             }
         }
         loading_progress = 50;
@@ -70,9 +99,11 @@ break_search:
             for (int j = 0; j < cur_map.size; j++) {
                 if (cur_map.grid[i][j] > MC_WALL && cur_map.grid[i][j] < MC_FLOOR) {
                     done = false;
+                    goto break_test;
                 }
             }
         }
+break_test:;
     }
     loading_progress = 100;
 
