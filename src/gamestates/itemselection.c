@@ -23,6 +23,7 @@ void runItemSelection() {
 
     float rotation = 0;
     int selected_item = 0;
+    int row_size = (player_items_n >> 1) + (player_items_n & 1);
 
     global_timer = 0;
     while (cur_gs == GS_ITEMSELECT) {
@@ -38,6 +39,16 @@ void runItemSelection() {
             }
             if (state->buttons & CONT_DPAD_RIGHT) {
                 selected_item++;
+                global_timer = 0;
+            }
+            if (state->buttons & CONT_DPAD_UP) {
+                selected_item -= row_size;
+                if (selected_item < 0) selected_item += 2*row_size;
+                global_timer = 0;
+            }
+            if (state->buttons & CONT_DPAD_DOWN) {
+                selected_item += row_size;
+                if (selected_item >= player_items_n) selected_item -= 2*row_size;
                 global_timer = 0;
             }
             if (state->buttons & CONT_START) {
@@ -67,9 +78,11 @@ void runItemSelection() {
         drawModel(0);
         glPopMatrix();
 
+        glTranslatef((selected_item % row_size)/-8.0f, (selected_item / row_size)/8.0f, 0);
+
         for (int i = 0; i < player_items_n; i++) {
             glPushMatrix();
-            glTranslatef((i-selected_item)/8.0f, 0, 0);
+            glTranslatef((i % row_size)/8.0f, (i / row_size)/-8.0f, 0);
             glRotatef(rotation, 0, 1, 0);
             glScalef(0.03f, 0.03f, 0.03f);
             drawModel(items_models[player_items[i].item_type]);
