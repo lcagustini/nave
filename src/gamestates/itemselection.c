@@ -52,6 +52,8 @@ void runItemSelection() {
             selected_item = 0;
         }
 
+        if (!player_items_n) cur_gs = GS_GAME;
+
         rotation += 0.4;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

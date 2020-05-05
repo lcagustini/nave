@@ -71,7 +71,7 @@ void runGame() {
     cur_map.models[MC_WALL] = loaded_models_n;
     loadModel("/game/wall.obj", "/game/wall.vq", VERTEX_ALL, 128);
 
-    generateMap(30);
+    generateMap(cur_map.level*2 + 10);
 
     if (entities_size == 0) {
         loadEntitiesFromFile("/players/player.ent");
@@ -110,11 +110,11 @@ void runGame() {
 
         if (entities_size == 1) {
             cur_map.level++;
-            if (cur_map.level > 2) {
+            cur_gs = GS_ITEMSELECT;
+            if (cur_map.level > 5) {
                 puts("goto ending");
                 cur_gs = GS_TITLE; //TODO: goto ending
             }
-            cur_gs = GS_ITEMSELECT;
         }
 
         drawFrame();
