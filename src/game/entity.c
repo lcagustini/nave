@@ -106,7 +106,7 @@ void entityCollidesWithPlayer(int id) {
 
         addVelocityToEntity(v, 0.1f, id);
 
-        entities[PLAYER_ID].health -= entities[id].damage;
+        entities[PLAYER_ID].health -= (int) entities[id].damage;
     }
 }
 
@@ -174,10 +174,10 @@ int loadEntitiesFromFile(const char *filename) {
                 ent->health = ent->max_health;
             }
             else if (!strcmp(buffer, "damage")) {
-                fscanf(f, " %d", &ent->damage);
+                fscanf(f, " %f", &ent->damage);
             }
             else if (!strcmp(buffer, "shot_rate")) {
-                fscanf(f, " %d", &ent->shot_rate);
+                fscanf(f, " %f", &ent->shot_rate);
             }
             else if (!strcmp(buffer, "range")) {
                 fscanf(f, " %f", &ent->range);

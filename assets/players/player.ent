@@ -1,7 +1,7 @@
 1
 type 0
 health 10
-damage 2
+damage 1
 shot_rate 100
 range 2
 shot_speed 0.09

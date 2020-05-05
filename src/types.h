@@ -100,8 +100,8 @@ struct entity {
     int cooldown;
 
     int max_health;
-    int damage;
-    int shot_rate;
+    float damage;
+    float shot_rate;
     float range;
     float shot_speed;
     float speed;
